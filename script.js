@@ -53,11 +53,15 @@ class Paper {
       moveHandler(e.clientX, e.clientY);
     });
 
-    // Touch move
-    document.addEventListener('touchmove', (e) => {
-      const touch = e.touches[0];
-      moveHandler(touch.clientX, touch.clientY);
-    });
+    // Touch move (with preventDefault to stop page scroll)
+document.addEventListener('touchmove', (e) => {
+  if (this.holdingPaper) {
+    e.preventDefault(); // stop scrolling while dragging
+    const touch = e.touches[0];
+    moveHandler(touch.clientX, touch.clientY);
+  }
+}, { passive: false }); // 👈 important so preventDefault works
+
 
     // Mouse down
     paper.addEventListener('mousedown', (e) => {
@@ -104,3 +108,4 @@ papers.forEach(paper => {
   const p = new Paper();
   p.init(paper);
 });
+
