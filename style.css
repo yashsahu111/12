@@ -16,7 +16,10 @@ body {
   transform: rotateZ(-5deg);
   box-shadow: 1px 15px 20px 0px rgba(0,0,0,0.5);
   position: absolute;
+
+  touch-action: none;   /* 👈 add this line */
 }
+
 .paper.heart {
   position: relative;
   width: 200px;
@@ -64,4 +67,5 @@ p {
   opacity: 0.75;
   user-select: none;
   
+
 }
