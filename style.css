@@ -9,8 +9,8 @@ body {
 
 .envelope {
   position: relative;
-  width: 350px;   /* bigger envelope */
-  height: 240px;  /* taller */
+  width: 350px;
+  height: 240px;
   background: #f8c8dc;
   background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
@@ -39,7 +39,7 @@ body {
   top: 100%;
   left: 0;
   width: 100%;
-  min-height: 400px;  /* 👈 bigger than envelope */
+  height: 350px; /* fixed visible height */
   background: #fff;
   background-image: url("https://www.transparenttextures.com/patterns/old-mathematics.png");
   padding: 30px;
@@ -48,6 +48,19 @@ body {
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
   transition: top 2s ease-in-out;
   z-index: 2;
+
+  overflow-y: auto;   /* 👈 makes it scrollable */
+  scrollbar-width: thin; 
+  scrollbar-color: #d6336c #f0f0f0;
+}
+
+.letter::-webkit-scrollbar {
+  width: 6px;
+}
+
+.letter::-webkit-scrollbar-thumb {
+  background-color: #d6336c;
+  border-radius: 3px;
 }
 
 .letter h2 {
@@ -67,7 +80,7 @@ body {
 }
 
 .envelope.open .letter {
-  top: -150px; /* 👈 move fully out to reveal taller paper */
+  top: -150px; /* slide out */
 }
 
 .to-name {
