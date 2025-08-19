@@ -4,14 +4,15 @@ body {
   align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Zeyada', cursive;
 }
 
 .envelope {
   position: relative;
-  width: 300px;
-  height: 200px;
+  width: 320px;
+  height: 220px;
   background: #f8c8dc;
+  background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
   cursor: pointer;
   perspective: 1000px;
@@ -26,6 +27,7 @@ body {
   width: 100%;
   height: 100%;
   background: #ffb6c1;
+  background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
   clip-path: polygon(0 0, 100% 0, 50% 50%);
   transform-origin: top;
   transition: transform 1s ease-in-out;
@@ -38,7 +40,8 @@ body {
   left: 0;
   width: 100%;
   background: #fff;
-  padding: 20px;
+  background-image: url("https://www.transparenttextures.com/patterns/old-mathematics.png");
+  padding: 25px;
   box-sizing: border-box;
   border-radius: 6px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
@@ -48,13 +51,13 @@ body {
 
 .letter h2 {
   margin-top: 0;
-  font-size: 22px;
+  font-size: 28px;
   color: #d6336c;
 }
 
 .letter p {
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 20px;
+  line-height: 1.7;
   color: #333;
 }
 
@@ -71,7 +74,7 @@ body {
   bottom: 10px;
   right: 20px;
   font-style: italic;
-  font-size: 14px;
+  font-size: 18px;
   color: #333;
   z-index: 1;
 }
