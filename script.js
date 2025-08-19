@@ -1,6 +1,5 @@
-const envelope = document.getElementById('envelope');
+const card = document.getElementById('card');
 
-envelope.addEventListener('click', () => {
-  envelope.classList.toggle('open');
-  document.body.classList.toggle('noscroll', envelope.classList.contains('open'));
+card.addEventListener('click', () => {
+  card.classList.toggle('open');
 });
