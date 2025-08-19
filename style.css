@@ -6,6 +6,19 @@ body {
   background: linear-gradient(135deg, #f9c5d1, #9795ef);
   font-family: 'Zeyada', cursive;
   margin: 0;
+  overflow: hidden;
+}
+
+/* floating hearts container */
+.hearts {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* let clicks pass through */
+  overflow: hidden;
+  z-index: 0;
 }
 
 .card {
@@ -13,6 +26,8 @@ body {
   height: 220px;
   perspective: 1200px;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 
 .front, .inside {
@@ -84,4 +99,23 @@ body {
 
 .card.open .inside {
   transform: rotateY(360deg);
+}
+
+/* hearts */
+.heart {
+  position: absolute;
+  font-size: 24px;
+  color: #ff4d6d;
+  animation: floatUp 4s linear forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(100vh) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1.2);
+    opacity: 0;
+  }
 }
