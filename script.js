@@ -4,14 +4,30 @@ const heartsContainer = document.getElementById('hearts');
 
 questions.forEach((q, index) => {
   const buttons = q.querySelectorAll('button');
+  const feedback = q.querySelector('.feedback');
+  const correctAnswer = q.dataset.answer;
+
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
-      q.classList.remove('active');
-      if (index < questions.length - 1) {
-        questions[index + 1].classList.add('active');
+      if (btn.textContent.trim() === correctAnswer) {
+        // correct → next question
+        feedback.textContent = "";
+        q.classList.remove('active');
+        if (index < questions.length - 1) {
+          questions[index + 1].classList.add('active');
+        } else {
+          result.style.display = 'block';
+          spawnHearts();
+        }
       } else {
-        result.style.display = 'block';
-        spawnHearts();
+        // wrong → sarcasm
+        const sarcasticLines = [
+          "😏 Really? Try again.",
+          "😂 Wrong answer, silly!",
+          "🙄 You sure about that?",
+          "🤣 Haha, nope!"
+        ];
+        feedback.textContent = sarcasticLines[Math.floor(Math.random() * sarcasticLines.length)];
       }
     });
   });
