@@ -2,8 +2,6 @@ const questions = document.querySelectorAll('.question');
 const result = document.querySelector('.result');
 const heartsContainer = document.getElementById('hearts');
 
-let current = 0;
-
 questions.forEach((q, index) => {
   const buttons = q.querySelectorAll('button');
   buttons.forEach(btn => {
@@ -20,7 +18,7 @@ questions.forEach((q, index) => {
 });
 
 function spawnHearts() {
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 40; i++) {
     createHeart();
   }
 }
