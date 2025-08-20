@@ -1,7 +1,7 @@
 body {
   margin: 0;
-  font-family: 'Zeyada', cursive;
-  background: linear-gradient(135deg, #f9c5d1, #9795ef);
+  font-family: 'Pacifico', cursive;
+  background: linear-gradient(135deg, #ffe4c7, #d4a5ff);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,12 +10,12 @@ body {
 }
 
 .quiz-container {
-  background: #fff;
-  background-image: url("https://www.transparenttextures.com/patterns/old-mathematics.png");
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  background: #fff8dc;
+  background-image: url("https://www.transparenttextures.com/patterns/aged-paper.png");
+  border-radius: 16px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.25);
   width: 90%;
-  max-width: 400px;
+  max-width: 420px;
   padding: 30px;
   text-align: center;
   position: relative;
@@ -31,30 +31,31 @@ body {
 }
 
 .question h2 {
-  font-size: 26px;
-  color: #d6336c;
+  font-size: 28px;
+  color: #8b1c42;
   margin-bottom: 20px;
+  text-shadow: 1px 2px 2px rgba(0,0,0,0.2);
 }
 
 .options button {
   display: block;
   width: 100%;
   margin: 10px 0;
-  padding: 12px;
+  padding: 14px;
   border: none;
   border-radius: 12px;
   font-size: 20px;
   cursor: pointer;
-  background: #ffb6c1;
-  color: #333;
+  background: #f9c5d1;
+  color: #5a2a2a;
   transition: all 0.3s;
-  font-family: 'Zeyada', cursive;
+  font-family: 'Pacifico', cursive;
 }
 
 .options button:hover {
-  background: #d6336c;
+  background: #8b1c42;
   color: #fff;
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .result {
@@ -63,8 +64,8 @@ body {
 }
 
 .result h2 {
-  font-size: 32px;
-  color: #ff4d6d;
+  font-size: 34px;
+  color: #c2185b;
   margin: 0 0 10px 0;
 }
 
