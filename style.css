@@ -1,13 +1,14 @@
 body {
   margin: 0;
   font-family: 'Pacifico', cursive;
-  background: linear-gradient(135deg, #ffe4c7, #d4a5ff);
+  background: linear-gradient(135deg, #ff9a9e, #ff6a88, #d66d75);
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   overflow: hidden;
 }
+
 
 .quiz-container {
   background: #fff8dc;
@@ -115,3 +116,4 @@ body {
   from {opacity: 0; transform: translateY(20px);}
   to {opacity: 1; transform: translateY(0);}
 }
+
