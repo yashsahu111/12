@@ -1,107 +1,90 @@
 body {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f9c5d1, #9795ef);
-  font-family: 'Zeyada', cursive;
   margin: 0;
+  font-family: 'Zeyada', cursive;
+  background: linear-gradient(135deg, #f9c5d1, #9795ef);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
   overflow: hidden;
 }
 
-/* floating hearts container */
+.quiz-container {
+  background: #fff;
+  background-image: url("https://www.transparenttextures.com/patterns/old-mathematics.png");
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  width: 90%;
+  max-width: 400px;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+}
+
+.question {
+  display: none;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.question.active {
+  display: block;
+}
+
+.question h2 {
+  font-size: 26px;
+  color: #d6336c;
+  margin-bottom: 20px;
+}
+
+.options button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  background: #ffb6c1;
+  color: #333;
+  transition: all 0.3s;
+  font-family: 'Zeyada', cursive;
+}
+
+.options button:hover {
+  background: #d6336c;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.result {
+  display: none;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.result h2 {
+  font-size: 32px;
+  color: #ff4d6d;
+  margin: 0 0 10px 0;
+}
+
+.result p {
+  font-size: 22px;
+  color: #333;
+}
+
+/* hearts animation */
 .hearts {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* let clicks pass through */
+  pointer-events: none;
   overflow: hidden;
   z-index: 0;
 }
 
-.card {
-  width: 320px;
-  height: 220px;
-  perspective: 1200px;
-  cursor: pointer;
-  position: relative;
-  z-index: 1;
-}
-
-.front, .inside {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  backface-visibility: hidden;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: transform 1s ease-in-out;
-}
-
-.front {
-  background: #ffdde1;
-  background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
-  z-index: 2;
-}
-
-.front h2 {
-  margin: 0;
-  font-size: 28px;
-  color: #333;
-}
-
-.front p {
-  font-size: 18px;
-  color: #666;
-}
-
-.ribbon {
-  font-size: 40px;
-  margin-bottom: 10px;
-}
-
-.inside {
-  background: #fff;
-  background-image: url("https://www.transparenttextures.com/patterns/old-mathematics.png");
-  transform: rotateY(180deg);
-  padding: 20px;
-  text-align: center;
-}
-
-.inside h2 {
-  font-size: 36px;
-  margin: 0;
-  color: #d6336c;
-  text-shadow: 1px 2px 4px rgba(0,0,0,0.2);
-}
-
-.inside p {
-  font-size: 20px;
-  color: #333;
-  line-height: 1.6;
-}
-
-.inside .from {
-  margin-top: 15px;
-  font-size: 22px;
-  color: #d6336c;
-}
-
-.card.open .front {
-  transform: rotateY(180deg);
-}
-
-.card.open .inside {
-  transform: rotateY(360deg);
-}
-
-/* hearts */
 .heart {
   position: absolute;
   font-size: 24px;
@@ -118,4 +101,9 @@ body {
     transform: translateY(-10vh) scale(1.2);
     opacity: 0;
   }
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
 }
