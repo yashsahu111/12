@@ -58,6 +58,13 @@ body {
   transform: scale(1.08);
 }
 
+.feedback {
+  margin-top: 12px;
+  font-size: 18px;
+  color: #d6336c;
+  min-height: 22px; /* keeps space */
+}
+
 .result {
   display: none;
   animation: fadeIn 1s ease-in-out;
