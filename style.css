@@ -1,28 +1,27 @@
 :root {
   --accent: #c72b56;
-  --soft: #ffdfe6;
   --cream: #fff8e8;
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;}
 html,body{
-  height:100%;
   font-family:'Pacifico',cursive;
   background:linear-gradient(160deg,#ffd7e0 0%,#ffdede 25%,#e6d3ff 100%);
   color:#4a2b34;
-  overflow-y:auto;
+  min-height:100vh;
   -webkit-font-smoothing:antialiased;
+  scroll-behavior:smooth;
 }
 
-/* main wrapper */
+/* Layout */
 main{
   width:92vw;
   max-width:420px;
   margin:0 auto;
-  padding:20px 0 60px;
+  padding:20px 0 80px;
 }
 
-/* hero section */
+/* Intro */
 .hero{
   text-align:center;
   margin-bottom:30px;
@@ -49,7 +48,7 @@ main{
   box-shadow:0 6px 20px rgba(0,0,0,0.1);
 }
 
-/* messages */
+/* Messages */
 .messages{
   background:#fffaf0;
   border-radius:16px;
@@ -68,7 +67,6 @@ main{
   opacity:1;
   transform:translateY(0);
 }
-
 .controls{
   margin-top:16px;
   display:flex;
@@ -77,33 +75,59 @@ main{
 }
 .btn.small{font-size:14px;padding:8px 14px;}
 
-/* letter */
-.letter-wrapper{
-  background:linear-gradient(180deg,#fff8f8,#ffe6ec);
-  border-radius:16px;
-  padding:24px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.1);
+/* Letter section */
+.letter-section{
+  margin-top:40px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
 }
-.letter{
+.envelope{
+  width:100%;
+  max-width:400px;
+  position:relative;
+  perspective:1000px;
+}
+.cover{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:160px;
+  background:linear-gradient(180deg,#ffc6d0,#ff9ab0);
+  clip-path:polygon(0 0,100% 0,50% 100%);
+  border-radius:10px 10px 0 0;
+  transform-origin:top;
+  transition:transform 1s ease;
+  z-index:2;
+}
+.paper{
+  position:relative;
   background:#fffef6;
   background-image:url("https://www.transparenttextures.com/patterns/old-mathematics.png");
-  border-radius:12px;
-  padding:20px;
-  box-shadow:0 6px 14px rgba(0,0,0,0.1);
+  border-radius:0 0 10px 10px;
+  padding:24px;
+  box-shadow:0 8px 20px rgba(0,0,0,0.1);
+  top:140px;
+  z-index:1;
 }
-.letter h2{
+.envelope.open .cover{
+  transform:rotateX(180deg);
+}
+
+/* Text in letter */
+.paper h2{
   font-family:'Great Vibes',cursive;
   color:var(--accent);
   font-size:28px;
   margin-bottom:8px;
 }
-.letter p{
+.paper p{
   font-size:16px;
   line-height:1.6;
   margin:8px 0;
 }
 
-/* hearts */
+/* Hearts */
 .hearts{
   position:fixed;
   top:0;left:0;
@@ -122,7 +146,7 @@ main{
   100%{transform:translateY(-10vh) scale(1.2);opacity:0;}
 }
 
-/* audio button */
+/* Music */
 .audio-wrap{
   position:fixed;
   top:18px;right:18px;
