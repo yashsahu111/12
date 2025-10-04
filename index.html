@@ -5,30 +5,29 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>For You, My Love 💌</title>
 
-  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&display=swap" rel="stylesheet">
-
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Audio -->
+  <!-- Music -->
   <div class="audio-wrap">
     <button id="playBtn" class="play-btn">▶ Play song</button>
     <audio id="bgAudio" loop preload="auto">
-      <!-- Replace song.mp3 with your actual audio URL -->
+      <!-- Replace this with your actual MP3 URL -->
       <source src="song.mp3" type="audio/mpeg">
     </audio>
   </div>
 
   <main>
+    <!-- Intro -->
     <section class="hero">
       <h1>For You, My Love 💖</h1>
       <p>A little surprise — tap below to begin</p>
       <button id="startBtn" class="btn">Open</button>
     </section>
 
+    <!-- Messages -->
     <section class="messages" id="messages">
       <div id="msgArea"></div>
       <div class="controls">
@@ -37,20 +36,24 @@
       </div>
     </section>
 
-    <section class="letter-wrapper" id="letterWrapper">
-      <div class="letter">
-        <h2>Dear [Her Name],</h2>
-        <p>I know I’ve made mistakes, and I’m truly sorry. You are my heart, my calm, my chaos, my home.</p>
-        <p>Every moment with you feels like sunrise — warm, safe, endless. I don’t ever want to lose that glow.</p>
-        <p>Let’s keep choosing each other, always. 💌</p>
-        <p>Forever yours,<br><strong>[Your Name]</strong></p>
+    <!-- Letter -->
+    <section class="letter-section" id="letterSection">
+      <div class="envelope" id="envelope">
+        <div class="cover" id="cover"></div>
+        <div class="paper">
+          <h2>Dear [Her Name],</h2>
+          <p>I know I’ve made mistakes, and I’m truly sorry. You are my heart, my calm, my chaos, my home.</p>
+          <p>Every moment with you feels like sunrise — warm, safe, endless. I don’t ever want to lose that glow.</p>
+          <p>Let’s keep choosing each other, always. 💌</p>
+          <p>Forever yours,<br><strong>[Your Name]</strong></p>
+        </div>
       </div>
     </section>
   </main>
 
   <div class="hearts" id="hearts"></div>
 
-  <!-- JS -->
   <script src="script.js"></script>
 </body>
 </html>
+
