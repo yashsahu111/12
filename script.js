@@ -58,11 +58,13 @@ function showNext(){
 
 // reveal and open letter
 function revealLetter(){
-  letterSection.hidden = false;
+  // Show letter smoothly
+  letterSection.classList.add('show');
   envelope.classList.add('open');
   spawnHearts(30);
   letterSection.scrollIntoView({behavior:'smooth'});
 }
+
 
 // hearts
 function spawnHearts(count=20){
@@ -89,3 +91,4 @@ playBtn.addEventListener('click', ()=>{
     playBtn.textContent='▶ Play';
   }
 });
+
