@@ -6,7 +6,6 @@ const messages = [
   "Now open your letter 💌"
 ];
 
-const startBtn = document.getElementById('startBtn');
 const msgArea = document.getElementById('msgArea');
 const autoBtn = document.getElementById('autoBtn');
 const heartsContainer = document.getElementById('hearts');
@@ -19,14 +18,6 @@ let idx = -1;
 let auto = false;
 let timer = null;
 
-// start button
-startBtn.addEventListener('click', () => {
-  showNext();
-  startBtn.disabled = true;
-  document.getElementById('messages').scrollIntoView({behavior:'smooth'});
-});
-
-// auto button
 autoBtn.addEventListener('click', ()=>{
   auto = !auto;
   autoBtn.textContent = auto ? 'Auto: ON' : 'Auto';
@@ -35,7 +26,8 @@ autoBtn.addEventListener('click', ()=>{
 
 function startAuto(){
   stopAuto();
-  timer = setInterval(showNext, 2500);
+  // faster auto: every 1.8 seconds instead of 2.5
+  timer = setInterval(showNext, 1800);
 }
 function stopAuto(){
   if(timer){ clearInterval(timer); timer=null; }
@@ -58,13 +50,11 @@ function showNext(){
 
 // reveal and open letter
 function revealLetter(){
-  // Show letter smoothly
   letterSection.classList.add('show');
   envelope.classList.add('open');
   spawnHearts(30);
   letterSection.scrollIntoView({behavior:'smooth'});
 }
-
 
 // hearts
 function spawnHearts(count=20){
@@ -91,4 +81,3 @@ playBtn.addEventListener('click', ()=>{
     playBtn.textContent='▶ Play';
   }
 });
-
