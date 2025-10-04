@@ -1,4 +1,3 @@
-// Messages before the letter
 const messages = [
   "Hey beautiful 💕",
   "You’re the calm after my storms 🌈",
@@ -14,6 +13,8 @@ const autoBtn = document.getElementById('autoBtn');
 const heartsContainer = document.getElementById('hearts');
 const playBtn = document.getElementById('playBtn');
 const bgAudio = document.getElementById('bgAudio');
+const envelope = document.getElementById('envelope');
+const cover = document.getElementById('cover');
 
 let idx = -1;
 let auto = false;
@@ -22,10 +23,11 @@ let timer = null;
 startBtn.addEventListener('click', () => {
   showNext();
   startBtn.disabled = true;
-  window.scrollTo({top:document.getElementById('messages').offsetTop,behavior:'smooth'});
+  document.getElementById('messages').scrollIntoView({behavior:'smooth'});
 });
 
 nextBtn.addEventListener('click', showNext);
+
 autoBtn.addEventListener('click', ()=>{
   auto = !auto;
   autoBtn.textContent = auto ? 'Auto: ON' : 'Auto';
@@ -49,17 +51,18 @@ function showNext(){
     msgArea.innerHTML='';
     msgArea.appendChild(m);
     requestAnimationFrame(()=>m.classList.add('show'));
-
-    // scroll into view
-    msgArea.scrollIntoView({behavior:'smooth',block:'center'});
   } else {
-    spawnHearts(40);
-    document.getElementById('letterWrapper').scrollIntoView({behavior:'smooth'});
+    openLetter();
     stopAuto();
   }
 }
 
-// hearts floating
+function openLetter(){
+  envelope.classList.add('open');
+  spawnHearts(30);
+  document.getElementById('letterSection').scrollIntoView({behavior:'smooth'});
+}
+
 function spawnHearts(count=20){
   for(let i=0;i<count;i++){
     createHeart();
@@ -76,13 +79,13 @@ function createHeart(){
   setTimeout(()=>h.remove(),5200);
 }
 
-// play/pause music
+// Play/Pause music
 playBtn.addEventListener('click', ()=>{
   if(bgAudio.paused){
     bgAudio.play().catch(()=>{});
-    playBtn.textContent='⏸ Pause song';
+    playBtn.textContent='⏸ Pause';
   } else {
     bgAudio.pause();
-    playBtn.textContent='▶ Play song';
+    playBtn.textContent='▶ Play';
   }
 });
