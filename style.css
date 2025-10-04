@@ -75,13 +75,24 @@ main{
 .btn.small{font-size:14px;padding:8px 14px;}
 
 /* Letter section */
-.letter-section{
-  margin-top:40px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
+.letter-section {
+  display: none;            /* Hide it initially */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1s ease;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
+
+.letter-section.show {
+  display: flex;            /* Make visible when script adds class */
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .envelope{
   width:100%;
   max-width:400px;
@@ -160,3 +171,4 @@ main{
   cursor:pointer;
   font-weight:bold;
 }
+
