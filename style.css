@@ -71,7 +71,6 @@ main{
   margin-top:16px;
   display:flex;
   justify-content:center;
-  gap:10px;
 }
 .btn.small{font-size:14px;padding:8px 14px;}
 
