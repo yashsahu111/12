@@ -8,26 +8,25 @@ const messages = [
 
 const startBtn = document.getElementById('startBtn');
 const msgArea = document.getElementById('msgArea');
-const nextBtn = document.getElementById('nextBtn');
 const autoBtn = document.getElementById('autoBtn');
 const heartsContainer = document.getElementById('hearts');
 const playBtn = document.getElementById('playBtn');
 const bgAudio = document.getElementById('bgAudio');
 const envelope = document.getElementById('envelope');
-const cover = document.getElementById('cover');
+const letterSection = document.getElementById('letterSection');
 
 let idx = -1;
 let auto = false;
 let timer = null;
 
+// start button
 startBtn.addEventListener('click', () => {
   showNext();
   startBtn.disabled = true;
   document.getElementById('messages').scrollIntoView({behavior:'smooth'});
 });
 
-nextBtn.addEventListener('click', showNext);
-
+// auto button
 autoBtn.addEventListener('click', ()=>{
   auto = !auto;
   autoBtn.textContent = auto ? 'Auto: ON' : 'Auto';
@@ -52,21 +51,22 @@ function showNext(){
     msgArea.appendChild(m);
     requestAnimationFrame(()=>m.classList.add('show'));
   } else {
-    openLetter();
     stopAuto();
+    revealLetter();
   }
 }
 
-function openLetter(){
+// reveal and open letter
+function revealLetter(){
+  letterSection.hidden = false;
   envelope.classList.add('open');
   spawnHearts(30);
-  document.getElementById('letterSection').scrollIntoView({behavior:'smooth'});
+  letterSection.scrollIntoView({behavior:'smooth'});
 }
 
+// hearts
 function spawnHearts(count=20){
-  for(let i=0;i<count;i++){
-    createHeart();
-  }
+  for(let i=0;i<count;i++) createHeart();
 }
 function createHeart(){
   const h=document.createElement('div');
@@ -79,7 +79,7 @@ function createHeart(){
   setTimeout(()=>h.remove(),5200);
 }
 
-// Play/Pause music
+// Music control
 playBtn.addEventListener('click', ()=>{
   if(bgAudio.paused){
     bgAudio.play().catch(()=>{});
