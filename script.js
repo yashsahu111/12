@@ -3,7 +3,7 @@ const messages = [
   "You’re the calm after my storms 🌈",
   "You make everything brighter ✨",
   "Your hugs are my favorite place 🤗",
-  "Now open your letter 💌"
+  "Here is your/my letter 💌"
 ];
 
 const msgArea = document.getElementById('msgArea');
@@ -81,3 +81,4 @@ playBtn.addEventListener('click', ()=>{
     playBtn.textContent='▶ Play';
   }
 });
+
