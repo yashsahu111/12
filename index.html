@@ -3,71 +3,54 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>For You — A Little Love</title>
+  <title>For You, My Love 💌</title>
 
-  <!-- Handwritten font -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Audio: replace "song.mp3" with your file or a hosted mp3 URL.
-       Note: Autoplay is usually blocked on mobile — user must press Play.
-       You may also use an <audio> with controls or host on GitHub raw.
-  -->
-  <div class="audio-wrap" id="audioWrap">
+  <!-- Audio -->
+  <div class="audio-wrap">
     <button id="playBtn" class="play-btn">▶ Play song</button>
     <audio id="bgAudio" loop preload="auto">
+      <!-- Replace song.mp3 with your actual audio URL -->
       <source src="song.mp3" type="audio/mpeg">
-      <!-- If you have an OGG fallback, add another <source>. -->
     </audio>
   </div>
 
-  <main class="page" id="page">
-    <header class="hero">
-      <div class="hero-card">
-        <h1 class="title">For you, my love</h1>
-        <p class="subtitle">A little surprise — tap to begin</p>
-        <button id="startBtn" class="btn-start">Open</button>
-      </div>
-    </header>
+  <main>
+    <section class="hero">
+      <h1>For You, My Love 💖</h1>
+      <p>A little surprise — tap below to begin</p>
+      <button id="startBtn" class="btn">Open</button>
+    </section>
 
-    <!-- Messages area -->
-    <section class="messages" id="messages" aria-live="polite">
-      <!-- JS will populate messages -->
-      <div class="msg-area" id="msgArea"></div>
-
+    <section class="messages" id="messages">
+      <div id="msgArea"></div>
       <div class="controls">
         <button id="nextBtn" class="btn small">Next</button>
-        <button id="autoBtn" class="btn small ghost">Auto</button>
+        <button id="autoBtn" class="btn small">Auto</button>
       </div>
     </section>
 
-    <!-- Final letter (hidden until finished) -->
-    <section class="letter-wrapper" id="letterWrapper" aria-hidden="true">
-      <div class="envelope" id="envelope">
-        <div class="envelope-cover" id="envCover"></div>
-        <div class="letter" id="letter">
-          <h2 id="letterTitle">Dear [Her Name],</h2>
-          <div class="letter-body" id="letterBody">
-            <!-- Content populated from script (or edit in HTML) -->
-            <p>I'm sorry. I know I hurt you and that was never my intention. You mean everything to me — your smile, your warmth and your eyes that make my world brighter.</p>
-            <p>I promise to learn, to be better, and to keep making you laugh. Please forgive me.</p>
-            <p>Forever yours,<br><strong>[Your Name]</strong></p>
-          </div>
-        </div>
-        <div class="to-name">To: <strong>[Her Name]</strong></div>
-      </div>
-
-      <div class="letter-controls">
-        <button id="closeLetter" class="btn">Close</button>
+    <section class="letter-wrapper" id="letterWrapper">
+      <div class="letter">
+        <h2>Dear [Her Name],</h2>
+        <p>I know I’ve made mistakes, and I’m truly sorry. You are my heart, my calm, my chaos, my home.</p>
+        <p>Every moment with you feels like sunrise — warm, safe, endless. I don’t ever want to lose that glow.</p>
+        <p>Let’s keep choosing each other, always. 💌</p>
+        <p>Forever yours,<br><strong>[Your Name]</strong></p>
       </div>
     </section>
-
-    <!-- Celebration hearts -->
-    <div class="hearts" id="hearts"></div>
   </main>
 
+  <div class="hearts" id="hearts"></div>
+
+  <!-- JS -->
   <script src="script.js"></script>
 </body>
 </html>
