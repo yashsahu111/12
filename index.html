@@ -3,60 +3,108 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>For You, My Love 💌</title>
+  <title>For You — Full Experience</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&display=swap" rel="stylesheet">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&family=Nunito:wght@300;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Music -->
+  <!-- Top audio control (user must press to allow audio on mobile) -->
   <div class="audio-wrap">
     <button id="playBtn" class="play-btn">▶ Play song</button>
-    <audio id="bgAudio" loop preload="auto">
-      <!-- Replace this with your actual MP3 URL -->
-      <source src="images/Until I Found You - Stephen sanchez [Edit Audio].mp3" type="audio/mpeg">
+    <audio id="bgAudio" preload="auto" crossorigin="anonymous">
+      <!-- Replace "song.mp3" with your hosted mp3 URL -->
+      <source src="song.mp3" type="audio/mpeg">
+      Your browser does not support audio.
     </audio>
   </div>
 
   <main>
-    <!-- Intro -->
-    <section class="hero">
-      <h1>For You, My Love 💖</h1>
-      <p>A little surprise — press Auto below to start 💕</p>
-    </section>
+    <!-- SECTION 1: Auto messages -->
+    <section class="section hero" id="hero">
+      <h1 class="hero-title">For You, My Love 💖</h1>
+      <p class="hero-sub">A little journey — press <strong>Auto</strong> to begin the messages</p>
 
-    <!-- Messages -->
-    <section class="messages" id="messages">
-      <div id="msgArea"></div>
-      <div class="controls">
-        <button id="autoBtn" class="btn small">Auto</button>
-      </div>
-    </section>
-
-    <!-- Letter (hidden initially) -->
-    <section class="letter-section" id="letterSection">
-      <div class="envelope" id="envelope">
-        <div class="cover" id="cover"></div>
-        <div class="paper">
-          <h2>BIWIIIIIIIIII,</h2>
-          <p>Every time I think of you, my heart smiles a little brighter. 💖 You make ordinary days feel magical and fill my life with endless joy. 
-          Just knowing you’re in my world makes everything better, happier, and full of love.
-          I can’t wait for all the laughter, hugs, and beautiful moments we’ll share together.
-          You are my sunshine, my happiness, and my favorite “hello” every day.</p>
-          <p>Every moment with you feels like sunrise — warm, safe, endless. I don’t ever want to lose that glow.</p>
-          <p>Let’s keep choosing each other, always. 💌</p>
-          <p>Forever yours,<br><strong>SIR JIIIII</strong></p>
+      <div class="messages card" id="messagesCard">
+        <div id="msgArea" class="msg-area" aria-live="polite"></div>
+        <div class="controls">
+          <button id="autoBtn" class="btn small">Auto</button>
+          <button id="stopAutoBtn" class="btn small ghost" style="display:none">Stop</button>
         </div>
       </div>
     </section>
+
+    <!-- SECTION 2: Music + lyrics (spotify-like) -->
+    <section class="section player-section" id="playerSection">
+      <div class="player card">
+        <div class="player-left">
+          <div class="artwork" id="artwork">
+            <!-- Placeholder artwork; you can replace with an <img> if you want -->
+            <div class="art-heart">💗</div>
+          </div>
+        </div>
+
+        <div class="player-right">
+          <h3 id="trackTitle">Your Song Title</h3>
+          <p id="trackArtist" class="muted">Artist • Album</p>
+
+          <div class="controls-row">
+            <button id="prevBtn" class="icon-btn">⏮</button>
+            <button id="playPause" class="play-large">▶</button>
+            <button id="nextBtn" class="icon-btn">⏭</button>
+          </div>
+
+          <div class="progress-wrap" id="progressWrap">
+            <div class="time left" id="timeCur">0:00</div>
+            <div class="progress" id="progress">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="time right" id="timeTotal">0:00</div>
+          </div>
+
+          <div class="lyrics-box card" id="lyricsBox">
+            <!-- Lyrics lines will be injected here -->
+            <div id="lyricsInner" class="lyrics-inner"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Heart game -->
+    <section class="section game-section" id="gameSection">
+      <div class="card game-card">
+        <h2>Tap the hearts! 💘</h2>
+        <p class="muted">Tap as many hearts as you can in <strong id="gameTimer">20</strong> seconds</p>
+
+        <div class="game-area" id="gameArea" aria-live="polite">
+          <!-- hearts spawn here -->
+        </div>
+
+        <div class="game-controls">
+          <div class="score">Score: <span id="score">0</span></div>
+          <div>
+            <button id="startGame" class="btn">Start Game</button>
+            <button id="replayGame" class="btn" style="display:none">Play Again</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer / credits -->
+    <footer class="footer">
+      <small class="muted">Made with ❤️ — replace song.mp3 and lyrics in script.js to customize</small>
+    </footer>
   </main>
 
+  <!-- hearts floating layer (for end celebrations) -->
   <div class="hearts" id="hearts"></div>
 
+  <!-- JS -->
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
