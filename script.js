@@ -1,7 +1,7 @@
 /* Full-page romantic experience
    Sections:
    1) Auto messages
-   2) Music player with lyrics (replace song.mp3 and timestamps)
+   2) Music player with LRC lyrics
    3) Heart tapping game
 */
 
@@ -13,19 +13,6 @@ const messages = [
   "Your hugs are my favorite place 🤗",
   "Open the music and enjoy... 🎵"
 ];
-
-// --- Lyrics and timestamps (seconds) ---
-// Replace these with your real lyrics and timestamps for exact sync.
-// timestamps array must have same length as lyrics array.
-// Example: [0, 8.5, 16, 26] meaning show line 0 at 0s, line1 at 8.5s, etc.
-const lyrics = [
-  "Line 1 of the lyrics — gentle start",
-  "Line 2 — the chorus begins",
-  "Line 3 — bridge that hugs",
-  "Line 4 — the heart chorus",
-  "Line 5 — tender ending"
-];
-const timestamps = [0, 8, 16, 26, 36]; // seconds — edit to match your song
 
 /* ---------------- DOM ---------------- */
 const msgArea = document.getElementById('msgArea');
@@ -62,7 +49,6 @@ stopAutoBtn && stopAutoBtn.addEventListener('click', () => { stopAutoMessages();
 
 function startAutoMessages(){
   stopAutoMessages();
-  // faster than before — 1.6s
   autoTimer = setInterval(showNextMessage, 1600);
 }
 function stopAutoMessages(){
@@ -79,35 +65,20 @@ function showNextMessage(){
     el.textContent = messages[msgIndex];
     msgArea.appendChild(el);
     requestAnimationFrame(()=> el.classList.add('show'));
-    // scroll to player if next is the last message
     if (msgIndex === messages.length - 1){
-      // after a short pause, reveal player section and scroll
-      setTimeout(()=> {
-        revealPlayerSection();
-      }, 800);
+      setTimeout(()=> { revealPlayerSection(); }, 800);
     }
   } else {
     stopAutoMessages();
   }
 }
 
-/* -------------- PLAYER & LYRICS -------------- */
-function revealPlayerSection(){
-  // ensure playerSection is in view
-  playerSection.scrollIntoView({behavior:'smooth', block:'start'});
-  // populate lyrics lines
-  populateLyrics();
-}
+/* -------------- PLAYER & LYRICS (LRC) -------------- */
+let lrcLines = [];
 
-function populateLyrics(){
-  lyricsInner.innerHTML = '';
-  for (let i=0;i<lyrics.length;i++){
-    const l = document.createElement('div');
-    l.className = 'lyric';
-    l.dataset.index = i;
-    l.textContent = lyrics[i];
-    lyricsInner.appendChild(l);
-  }
+function revealPlayerSection(){
+  playerSection.scrollIntoView({behavior:'smooth', block:'start'});
+  loadLyricsLRC();
 }
 
 /* Play button at top (allows mobile play) */
@@ -121,7 +92,7 @@ playBtn.addEventListener('click', async () => {
   }
 });
 
-/* Play/Pause big button inside player (if user wants) */
+/* Play/Pause big button inside player */
 playPause.addEventListener('click', async () => {
   if (bgAudio.paused){
     try { await bgAudio.play(); } catch(e){ }
@@ -130,7 +101,6 @@ playPause.addEventListener('click', async () => {
   }
 });
 
-/* Update UI on play/pause */
 bgAudio.addEventListener('play', ()=> { playPause.textContent='❚❚'; playBtn.textContent='⏸ Pause song'; });
 bgAudio.addEventListener('pause', ()=> { playPause.textContent='▶'; playBtn.textContent='▶ Play song'; });
 
@@ -140,7 +110,6 @@ bgAudio.addEventListener('loadedmetadata', ()=> {
 });
 bgAudio.addEventListener('timeupdate', onTimeUpdate);
 
-/* Seek on progress click */
 document.getElementById('progressWrap').addEventListener('click', (e)=>{
   const rect = document.getElementById('progressWrap').getBoundingClientRect();
   const progressDiv = document.getElementById('progress');
@@ -150,32 +119,27 @@ document.getElementById('progressWrap').addEventListener('click', (e)=>{
   bgAudio.currentTime = pct * bgAudio.duration;
 });
 
-/* timeupdate handler — progress + lyric sync */
 function onTimeUpdate(){
   const cur = bgAudio.currentTime || 0;
   const dur = bgAudio.duration || 1;
   timeCur.textContent = formatTime(cur);
-  // update progress bar percent
   const pct = Math.max(0, Math.min(1, cur / dur));
   progressBar.style.width = (pct * 100) + '%';
 
-  // sync lyrics using timestamps
-  for (let i = 0; i < timestamps.length; i++){
-    const start = timestamps[i];
-    const end = timestamps[i+1] || Number.POSITIVE_INFINITY;
-    const lyricEl = document.querySelector(`.lyric[data-index="${i}"]`);
-    if (!lyricEl) continue;
-    if (cur >= start && cur < end){
-      if (!lyricEl.classList.contains('active')){
-        document.querySelectorAll('.lyric.active').forEach(x=>x.classList.remove('active'));
-        lyricEl.classList.add('active');
-        // ensure lyric is visible in lyrics box
-        lyricEl.scrollIntoView({behavior:'smooth', block:'center'});
-      }
-    } else {
-      lyricEl.classList.remove('active');
-    }
+  // LRC sync
+  if (!lrcLines || lrcLines.length === 0) return;
+  let currentIndex = 0;
+  for (let i=0;i<lrcLines.length;i++){
+    if (cur >= lrcLines[i].time) currentIndex = i;
+    else break;
   }
+  lrcLines.forEach((line, idx)=>{
+    const el = document.getElementById('lrc-'+idx);
+    if (!el) return;
+    el.classList.toggle('active', idx===currentIndex);
+  });
+  const activeEl = document.getElementById('lrc-'+currentIndex);
+  if (activeEl) activeEl.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
 function formatTime(t){
@@ -183,6 +147,28 @@ function formatTime(t){
   const minutes = Math.floor(t / 60);
   const seconds = Math.floor(t % 60).toString().padStart(2,'0');
   return `${minutes}:${seconds}`;
+}
+
+/* ---------------- LRC LOADING ---------------- */
+function loadLyricsLRC(){
+  fetch('For_A_Reason.lrc')
+    .then(res => res.text())
+    .then(text => {
+      lrcLines = text.split('\n').map(line=>{
+        const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+        if (!match) return null;
+        return {time: parseInt(match[1])*60 + parseFloat(match[2]), text: match[3]};
+      }).filter(Boolean);
+
+      lyricsInner.innerHTML = '';
+      lrcLines.forEach((line, idx)=>{
+        const div = document.createElement('div');
+        div.className = 'lyric';
+        div.id = 'lrc-'+idx;
+        div.textContent = line.text;
+        lyricsInner.appendChild(div);
+      });
+    });
 }
 
 /* ---------------- GAME: Tap hearts ---------------- */
@@ -205,18 +191,16 @@ function startGame(){
   gameScore = 0;
   gameTimer = 20;
   scoreEl.textContent = gameScore;
-  document.getElementById('startGame').style.display = 'none';
+  startGameBtn.style.display = 'none';
   replayGameBtn.style.display = 'none';
   gameTimerEl && (gameTimerEl.textContent = gameTimer);
 
-  // spawn hearts every 650ms
   spawnInterval = setInterval(spawnHeartInGame, 650);
-  // countdown every 1s
   gameInterval = setInterval(()=>{
     gameTimer--;
     gameTimerEl && (gameTimerEl.textContent = gameTimer);
     if (gameTimer <= 0) endGame();
-  }, 1000);
+  },1000);
 }
 
 function resetGame(){
@@ -234,43 +218,34 @@ function endGame(){
   gameRunning = false;
   clearInterval(spawnInterval); clearInterval(gameInterval);
   spawnInterval = null; gameInterval = null;
-  // remove remaining hearts
   setTimeout(()=>gameArea.innerHTML='', 400);
-  // show replay and celebrate
   replayGameBtn.style.display = 'inline-block';
-  // spawn celebratory hearts on page
   spawnHearts(30);
 }
 
-/* spawn a clickable heart inside game area */
 function spawnHeartInGame(){
   const h = document.createElement('div');
   h.className = 'heart-game';
   h.innerText = '💖';
   const areaRect = gameArea.getBoundingClientRect();
-  // random position inside area
   const size = 28 + Math.random()*22;
   const left = Math.random() * (areaRect.width - size);
   const top = Math.random() * (areaRect.height - size);
   h.style.left = left + 'px';
   h.style.top = top + 'px';
   h.style.fontSize = size + 'px';
-  // click handler
   h.addEventListener('click', () => {
     if (!gameRunning) return;
     gameScore++;
     scoreEl.textContent = gameScore;
-    // small pop animation
     h.style.transform = 'scale(1.25)';
     h.style.opacity = '0.2';
     setTimeout(()=> h.remove(), 220);
   });
   gameArea.appendChild(h);
-  // auto-remove after 3s if not clicked
   setTimeout(()=> { if (h.parentElement) h.remove(); }, 3200);
 }
 
-/* small celebratory hearts across page */
 function spawnHearts(count=20){
   for (let i=0;i<count;i++){
     const el = document.createElement('div');
@@ -284,33 +259,14 @@ function spawnHearts(count=20){
   }
 }
 
-/* Initialize lyrics UI so lines exist */
-populateLyrics();
-
-/* Ensure playerSection is visible when messages finish; we already call revealPlayerSection on last message */
-
-/* Accessibility: allow tapping the lyric to jump to that timestamp */
+/* Accessibility: click lyric to jump */
 lyricsInner.addEventListener('click', (e)=>{
   const target = e.target.closest('.lyric');
   if (!target) return;
-  const idx = Number(target.dataset.index || 0);
-  const t = timestamps[idx] || 0;
+  const idx = Number(target.id.replace('lrc-','') || 0);
+  const t = lrcLines[idx]?.time || 0;
   bgAudio.currentTime = t;
 });
 
-/* Safety: if user never presses play, clicking Player big play also tries to play */
-playPause.addEventListener('click', async ()=>{
-  if (bgAudio.paused){
-    try { await bgAudio.play(); } catch(e) {}
-  } else {
-    bgAudio.pause();
-  }
-});
-
-/* When the song ends, optionally spawn a few hearts */
 bgAudio.addEventListener('ended', ()=> spawnHearts(12));
-
-/* On page unload, clear timers */
-window.addEventListener('beforeunload', ()=> {
-  stopAutoMessages(); resetGame();
-});
+window.addEventListener('beforeunload', ()=> { stopAutoMessages(); resetGame(); });
