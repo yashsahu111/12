@@ -1,89 +1,75 @@
-/* Basic reset & variables */
-:root{
-  --accent:#c72b56;
-  --soft:#ffdfe6;
-  --card-bg:#fff8f0;
-  --muted:#7a4b54;
-  --glass: rgba(255,255,255,0.6);
-  --shadow: 0 10px 30px rgba(0,0,0,0.10);
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Nunito, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+/* Basic reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:Nunito, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; -webkit-font-smoothing:antialiased}
 body{
-  background: linear-gradient(160deg,#ffd7e0 0%,#ffdede 25%,#e6d3ff 100%);
-  color:#3b2b2f;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
+  background: linear-gradient(180deg,#bfe9ff 0%, #d6f0ff 40%, #fbe8f0 100%);
+  color:#3a2b31;
   overflow-y:auto;
 }
 
-/* helpers */
-main{max-width:980px;margin:0 auto;padding:28px 18px 80px}
-.section{margin-bottom:28px}
-.card{background:var(--card-bg);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+/* page layout */
+.page{max-width:980px;margin:0 auto;padding:28px 18px 120px}
+.hero{min-height:60vh;display:flex;align-items:center;justify-content:center}
+.hero-inner{text-align:center; position:relative; z-index:1; padding:30px; border-radius:14px; background:rgba(255,255,255,0.6); box-shadow:0 12px 30px rgba(0,0,0,0.08)}
+.hero-title{font-family:'Great Vibes',cursive;color:#b83968;font-size:28px;margin-bottom:18px;line-height:1.1; max-width:90vw}
 
-/* audio control */
-.audio-wrap{position:fixed;top:16px;right:16px;z-index:110}
-.play-btn{background:#ffffff;padding:8px 12px;border-radius:999px;border:none;box-shadow:0 6px 16px rgba(0,0,0,0.08);cursor:pointer}
+/* button */
+.btn{cursor:pointer;border:0;padding:10px 16px;border-radius:999px;font-weight:700}
+.btn-primary{background:linear-gradient(180deg,#ff9fb1,#ff6a88);color:white;box-shadow:0 8px 18px rgba(199,43,86,0.18)}
+.btn-secondary{background:linear-gradient(180deg,#fff;,#fff);color:#b83968;border:1px solid rgba(184,57,104,0.12);padding:8px 14px;border-radius:10px}
 
-/* HERO / messages */
-.hero-title{font-family:'Great Vibes',cursive;font-size:44px;margin:6px 0 6px;color:var(--accent);text-align:center}
-.hero-sub{text-align:center;color:var(--muted);margin-bottom:12px}
+/* subtle flower graphic at bottom (decorative) */
+.hero::after{
+  content:"";
+  display:block;
+  width:100%;
+  height:220px;
+  background:
+    radial-gradient(circle at 50% 80%, rgba(255,200,230,0.35), transparent 20%),
+    radial-gradient(circle at 30% 90%, rgba(180,240,200,0.15), transparent 20%),
+    radial-gradient(circle at 70% 95%, rgba(220,235,255,0.2), transparent 15%);
+  margin-top:18px;
+  border-radius:12px;
+  opacity:0.9;
+}
 
-.messages .msg-area{min-height:80px;display:flex;align-items:center;justify-content:center}
-.message{font-family:'Pacifico',cursive;font-size:20px;color:#4a2b34;padding:14px 18px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#fff6f3);box-shadow:0 8px 18px rgba(0,0,0,0.06);opacity:0;transform:translateY(20px);transition:all .45s cubic-bezier(.2,.9,.3,1)}
-.message.show{opacity:1;transform:translateY(0)}
+/* Modal (hidden by default) */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:200}
+.modal.show{display:flex}
+.modal-backdrop{position:absolute;inset:0;background:linear-gradient(180deg, rgba(30,30,40,0.28), rgba(10,10,30,0.36));backdrop-filter:blur(4px)}
+.modal-card{position:relative;width:94vw;max-width:540px;background:#fff;border-radius:12px;box-shadow:0 18px 60px rgba(0,0,0,0.28);overflow:hidden;z-index:10;transform:translateY(12px);transition:transform .36s cubic-bezier(.2,.9,.3,1);max-height:86vh;display:flex;flex-direction:column}
+.modal.show .modal-card{transform:translateY(0)}
 
-.controls{display:flex;gap:10px;justify-content:center;margin-top:12px}
-.btn{background:linear-gradient(180deg,#ff9fb1,#ff6a88);border:none;color:white;padding:8px 14px;border-radius:10px;cursor:pointer}
-.btn.small{padding:8px 12px;font-size:14px}.btn.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);color:var(--muted)}
+/* close button */
+.modal-close{position:absolute;right:12px;top:10px;background:transparent;border:0;font-size:20px;cursor:pointer;color:#7b485a;z-index:12}
 
-/* Player section */
-.player{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
-.player-left{width:140px;flex:0 0 140px}
-.artwork{width:140px;height:140px;border-radius:12px;background:linear-gradient(180deg,#fff0f2,#ffdfe6);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -10px 20px rgba(0,0,0,0.03)}
-.art-heart{font-size:40px}
-.player-right{flex:1;min-width:220px}
-#trackTitle{font-weight:700;margin:0}
-.muted{color:var(--muted);font-size:13px;margin:6px 0 10px}
+/* header */
+.modal-header{padding:18px 22px;border-bottom:1px solid rgba(200,200,200,0.12)}
+.modal-header h2{font-family:'Great Vibes',cursive;color:#b83968;margin:0;font-size:22px}
 
-/* playback controls */
-.controls-row{display:flex;gap:12px;align-items:center;margin-bottom:10px}
-.icon-btn{background:#fff;border:1px solid rgba(0,0,0,0.05);padding:8px 10px;border-radius:10px;cursor:pointer}
-.play-large{background:linear-gradient(180deg,#ff9fb1,#ff6a88);padding:12px 18px;border-radius:999px;border:none;color:white;cursor:pointer;font-size:16px}
-
-/* progress bar */
-.progress-wrap{display:flex;align-items:center;gap:10px}
-.progress{flex:1;height:8px;background:#f2e7e8;border-radius:999px;overflow:hidden;position:relative}
-.progress-bar{position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,#ff6a88,#ff9fb1)}
-.time{font-size:12px;color:var(--muted);min-width:36px;text-align:center}
-
-/* lyrics */
-.lyrics-box{margin-top:12px;background:rgba(255,255,255,0.9);padding:10px;border-radius:10px;max-height:180px;overflow:auto}
-.lyrics-inner{display:flex;flex-direction:column;gap:6px}
-.lyric{font-size:15px;color:#4a2b34;opacity:0.45;transition:all .25s}
-.lyric.active{font-weight:700;color:var(--accent);opacity:1;transform:translateX(0)}
-
-/* game */
-.game-card{text-align:center}
-.game-area{height:260px;border-radius:12px;background:linear-gradient(180deg,#fff7f7,#fff0f2);position:relative;overflow:hidden;margin:14px 0;padding:8px}
-.heart-game{position:absolute;font-size:20px;cursor:pointer;user-select:none;transition:transform .12s ease}
-.game-controls{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
-.score{font-weight:700}
-#startGame, #replayGame{padding:8px 12px;border-radius:10px;border:none;background:linear-gradient(180deg,#ff9fb1,#ff6a88);color:#fff}
+/* body */
+.modal-body{padding:18px 20px;overflow:auto}
+.letter-image{text-align:center;margin-bottom:12px}
+.letter-image img{width:120px;height:120px;border-radius:12px;border:6px solid rgba(255,160,180,0.18);box-shadow:0 8px 18px rgba(199,43,86,0.08)}
+.letter-content{font-size:15px;color:#4a2b34;line-height:1.6;padding:6px 4px}
+.letter-content p{margin-bottom:12px}
+.salute{font-style:italic;color:#7e4a57}
 
 /* footer */
-.footer{text-align:center;color:var(--muted);margin-top:18px;font-size:13px}
+.modal-footer{padding:12px 18px;border-top:1px solid rgba(200,200,200,0.08);display:flex;justify-content:flex-end;gap:12px}
 
-/* hearts celebration (global) */
-.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:150}
-.hearts .heart{position:absolute;font-size:22px;animation:floatUp 4s linear forwards}
-@keyframes floatUp{0%{transform:translateY(100vh) scale(.7);opacity:1}100%{transform:translateY(-10vh) scale(1.1);opacity:0}}
+/* hearts layer (celebration) */
+.hearts{position:fixed;inset:0;pointer-events:none;z-index:150}
+.hearts .heart{position:absolute;font-size:22px;animation:rise 4s linear forwards;filter:drop-shadow(0 6px 12px rgba(184,57,104,0.12))}
+@keyframes rise{0%{transform:translateY(100vh) scale(.6);opacity:1}100%{transform:translateY(-10vh) scale(1.1);opacity:0}}
 
-/* responsive */
-@media (max-width:720px){
-  .player{flex-direction:column;align-items:center}
-  .player-left{width:120px;flex-basis:120px}
-  .art-heart{font-size:34px}
-  .lyrics-box{max-height:160px}
+/* Responsive */
+@media (min-width:720px){
+  .hero-title{font-size:34px}
+  .modal-card{max-width:620px}
+}
+@media (max-width:420px){
+  .hero-title{font-size:22px}
+  .modal-card{width:96vw}
+  .letter-image img{width:100px;height:100px}
 }
