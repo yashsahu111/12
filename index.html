@@ -1,63 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flowers for You 🌸</title>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@300;600&family=Great+Vibes&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Flowers for You</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- Background music -->
-  <audio id="bgAudio" preload="auto" loop>
-    <source src="song.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Floating hearts container -->
-  <div id="hearts" class="hearts" aria-hidden="true"></div>
-
-  <!-- Flower animation + message -->
-  <main class="page">
-    <div class="flower-container">
-      <svg id="flower" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <path class="stem" d="M100 180 C98 130, 102 100, 100 60" stroke="#4caf50" stroke-width="4" fill="none"/>
-        <circle class="center" cx="100" cy="60" r="6" fill="#ffeb3b"/>
-        <circle class="petal petal1" cx="100" cy="45" r="12" fill="#ff80ab"/>
-        <circle class="petal petal2" cx="115" cy="60" r="12" fill="#ff80ab"/>
-        <circle class="petal petal3" cx="100" cy="75" r="12" fill="#ff80ab"/>
-        <circle class="petal petal4" cx="85" cy="60" r="12" fill="#ff80ab"/>
-      </svg>
-    </div>
-
-    <div class="message">
-      <h1 class="hero-title">So many flowers but my favourite one is you hehe 😋</h1>
-      <button id="openBtn" class="btn btn-primary">Open Special Letter 💌</button>
-    </div>
-  </main>
-
-  <!-- Modal Letter -->
-  <div id="modal" class="modal" role="dialog" aria-hidden="true">
-    <div class="modal-backdrop" id="backdrop"></div>
-    <div class="modal-card" role="document">
-      <button id="closeBtn" class="modal-close">✕</button>
-      <header class="modal-header">
-        <h2>A Special Letter For You</h2>
-      </header>
-      <div class="modal-body">
-        <div class="letter-image">
-          <img src="https://i.imgur.com/4AiXzf8.png" alt="cute image">
+    <div class="container">
+        <div class="flower-group">
+            <div class="flower"><div class="center"></div></div>
+            <div class="flower"><div class="center"></div></div>
+            <div class="flower"><div class="center"></div></div>
         </div>
-        <div class="letter-content">
-          <p class="salute"><em>My Dearest,</em></p>
-          <p>Like these beautiful flowers that bloom with time and care, our connection grows more beautiful each day. You bring color to my world just like these vibrant petals bring life to the garden.</p>
-          <p>Every moment with you is like watching a flower bloom — magical, precious, and filled with wonder. Thank you for being the sunshine in my life.</p>
-          <p>Forever yours,<br><strong>[Your Name]</strong></p>
+        <h2 class="message">So many flowers but my favourite one is you hehe <span>😊</span></h2>
+        <button class="special-btn" onclick="openLetter()">Open Special Letter 📝</button>
+        <div id="letter" class="letter-modal">
+            <div class="letter-content">
+                <span class="close" onclick="closeLetter()">&times;</span>
+                <p>My Dearest,<br><br>
+                Like these beautiful flowers that bloom with time and care, our connection grows more beautiful each day. You bring color to my world just like these vibrant petals bring life to the garden.<br><br>
+                Every moment with you is like watching a flower bloom - magical, precious, and filled with wonder. Thank you for being the sunshine in my life.<br><br>
+                With all my love,<br>
+                Your Secret Admirer 💕
+                </p>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
