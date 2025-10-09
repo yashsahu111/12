@@ -3,110 +3,67 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>For You — Full Experience</title>
+  <title>So many flowers — For You 🌸</title>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Great+Vibes&family=Nunito:wght@300;600&display=swap" rel="stylesheet">
+  <!-- fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@300;600&family=Great+Vibes&display=swap" rel="stylesheet">
 
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Top audio control (user must press to allow audio on mobile) -->
-  <div class="audio-wrap">
-    <button id="playBtn" class="play-btn">▶ Play song</button>
-    <audio id="bgAudio" preload="auto" crossorigin="anonymous">
-      <!-- Replace "song.mp3" with your hosted mp3 URL -->
-      <source src="For_A_Reason.mp3" type="audio/mpeg">
-      Your browser does not support audio.
-    </audio>
-  </div>
+  <!-- audio (replace song.mp3 with your file) -->
+  <audio id="bgAudio" preload="auto" loop>
+    <source src="song.mp3" type="audio/mpeg">
+    Your browser doesn't support audio.
+  </audio>
 
-  <main>
-    <!-- SECTION 1: Auto messages -->
-    <section class="section hero" id="hero">
-      <h1 class="hero-title">For You, My Love 💖</h1>
-      <p class="hero-sub">A little journey — press <strong>Auto</strong> to begin the messages</p>
+  <!-- floating hearts container (celebration) -->
+  <div id="hearts" class="hearts" aria-hidden="true"></div>
 
-      <div class="messages card" id="messagesCard">
-        <div id="msgArea" class="msg-area" aria-live="polite"></div>
-        <div class="controls">
-          <button id="autoBtn" class="btn small">Auto</button>
-          <button id="stopAutoBtn" class="btn small ghost" style="display:none">Stop</button>
-        </div>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-inner">
+        <h1 class="hero-title">So many flowers but my favourite one is you hehe 😊</h1>
+        <button id="openBtn" class="btn btn-primary">Open Special Letter 💌</button>
       </div>
     </section>
-
-    <!-- SECTION 2: Music + lyrics (spotify-like) -->
-    <section class="section player-section" id="playerSection">
-      <div class="player card">
-        <div class="player-left">
-          <div class="artwork" id="artwork">
-            <!-- Placeholder artwork; you can replace with an <img> if you want -->
-            <div class="art-heart">💗</div>
-          </div>
-        </div>
-
-        <div class="player-right">
-          <h3 id="trackTitle">Your Song Title</h3>
-          <p id="trackArtist" class="muted">Artist • Album</p>
-
-          <div class="controls-row">
-            <button id="prevBtn" class="icon-btn">⏮</button>
-            <button id="playPause" class="play-large">▶</button>
-            <button id="nextBtn" class="icon-btn">⏭</button>
-          </div>
-
-          <div class="progress-wrap" id="progressWrap">
-            <div class="time left" id="timeCur">0:00</div>
-            <div class="progress" id="progress">
-              <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <div class="time right" id="timeTotal">0:00</div>
-          </div>
-
-          <div class="lyrics-box card" id="lyricsBox">
-            <!-- Lyrics lines will be injected here -->
-            <div id="lyricsInner" class="lyrics-inner"></div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 3: Heart game -->
-    <section class="section game-section" id="gameSection">
-      <div class="card game-card">
-        <h2>Tap the hearts! 💘</h2>
-        <p class="muted">Tap as many hearts as you can in <strong id="gameTimer">20</strong> seconds</p>
-
-        <div class="game-area" id="gameArea" aria-live="polite">
-          <!-- hearts spawn here -->
-        </div>
-
-        <div class="game-controls">
-          <div class="score">Score: <span id="score">0</span></div>
-          <div>
-            <button id="startGame" class="btn">Start Game</button>
-            <button id="replayGame" class="btn" style="display:none">Play Again</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer / credits -->
-    <footer class="footer">
-      <small class="muted">Made with ❤️ — replace song.mp3 and lyrics in script.js to customize</small>
-    </footer>
   </main>
 
-  <!-- hearts floating layer (for end celebrations) -->
-  <div class="hearts" id="hearts"></div>
+  <!-- Modal Letter (hidden until opened) -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-backdrop" id="backdrop"></div>
 
-  <!-- JS -->
+    <div class="modal-card" role="document" aria-labelledby="modalTitle">
+      <button id="closeBtn" class="modal-close" aria-label="Close letter">✕</button>
+
+      <header class="modal-header">
+        <h2 id="modalTitle">A Special Letter For You</h2>
+      </header>
+
+      <div class="modal-body">
+        <div class="letter-image">
+          <!-- replace with your image URL if you want -->
+          <img src="https://i.imgur.com/4AiXzf8.png" alt="cute image" />
+        </div>
+
+        <div class="letter-content" id="letterContent" tabindex="0">
+          <p class="salute"><em>My Dearest,</em></p>
+
+          <p>Like these beautiful flowers that bloom with time and care, our connection grows more beautiful each day. You bring color to my world just like these vibrant petals bring life to the garden.</p>
+
+          <p>Every moment with you is like watching a flower bloom — magical, precious, and filled with wonder. Thank you for being the sunshine in my life.</p>
+
+          <p>Forever yours,<br><strong>[Your Name]</strong></p>
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <button id="playPauseBtn" class="btn btn-secondary">▶ Play song</button>
+      </footer>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
-
-
