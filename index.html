@@ -3,43 +3,63 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sorry Message</title>
+<title>Sorry Letter</title>
 <style>
-  /* CSS styles */
+  @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
   body {
     margin: 0;
     background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-    font-family: 'Arial', sans-serif;
+    font-family: 'Great Vibes', cursive;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     overflow: hidden;
-    color: #fff;
+    color: #5a2a27;
+    background-color: #fce8e6;
   }
 
   .container {
-    width: 100%;
+    width: 90%;
     max-width: 400px;
-    padding: 20px;
-    background: rgba(0,0,0,0.25);
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    padding: 30px 40px;
+    background: #fff8f7;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transform-origin: top center;
+    animation: openLetter 1.2s ease forwards;
+    opacity: 0;
+  }
+
+  @keyframes openLetter {
+    0% {
+      transform: rotateX(-90deg);
+      opacity: 0;
+    }
+    100% {
+      transform: rotateX(0deg);
+      opacity: 1;
+    }
   }
 
   .scrolling-text {
     white-space: nowrap;
     overflow: hidden;
     box-sizing: border-box;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e09e9e;
+    padding-bottom: 15px;
   }
 
   .scrolling-text p {
     display: inline-block;
     padding-left: 100%;
     animation: scroll-left 15s linear infinite;
-    font-size: 1.5rem;
-    font-weight: bold;
-    letter-spacing: 0.05em;
+    font-size: 1.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #ad3b3b;
   }
 
   @keyframes scroll-left {
@@ -52,16 +72,16 @@
   }
 
   .message {
-    margin-top: 30px;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    line-height: 1.6;
     text-align: center;
-    line-height: 1.4;
+    color: #702c2c;
   }
 
   .heart {
-    color: #ff4757;
-    font-size: 2rem;
-    animation: pulse 1.5s infinite;
+    color: #d94343;
+    font-size: 2.3rem;
+    animation: pulse 1.6s infinite;
   }
 
   @keyframes pulse {
@@ -69,7 +89,7 @@
       transform: scale(1);
     }
     50% {
-      transform: scale(1.3);
+      transform: scale(1.4);
     }
   }
 </style>
@@ -85,7 +105,6 @@
   </div>
 
 <script>
-  // JavaScript for interaction
   document.querySelector('.container').addEventListener('click', () => {
     alert("I truly mean it. Please forgive me.");
   });
