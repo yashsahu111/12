@@ -1,31 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Flowers for You</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sorry Message</title>
+<style>
+  /* CSS styles */
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    color: #fff;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .scrolling-text {
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .scrolling-text p {
+    display: inline-block;
+    padding-left: 100%;
+    animation: scroll-left 15s linear infinite;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+  }
+
+  @keyframes scroll-left {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .message {
+    margin-top: 30px;
+    font-size: 1.3rem;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .heart {
+    color: #ff4757;
+    font-size: 2rem;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.3);
+    }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="flower-group">
-            <div class="flower"><div class="center"></div></div>
-            <div class="flower"><div class="center"></div></div>
-            <div class="flower"><div class="center"></div></div>
-        </div>
-        <h2 class="message">So many flowers but my favourite one is you hehe <span>😊</span></h2>
-        <button class="special-btn" onclick="openLetter()">Open Special Letter 📝</button>
-        <div id="letter" class="letter-modal">
-            <div class="letter-content">
-                <span class="close" onclick="closeLetter()">&times;</span>
-                <p>My Dearest,<br><br>
-                Like these beautiful flowers that bloom with time and care, our connection grows more beautiful each day. You bring color to my world just like these vibrant petals bring life to the garden.<br><br>
-                Every moment with you is like watching a flower bloom - magical, precious, and filled with wonder. Thank you for being the sunshine in my life.<br><br>
-                With all my love,<br>
-                Your Secret Admirer 💕
-                </p>
-            </div>
-        </div>
+  <div class="container">
+    <div class="scrolling-text" aria-label="Scrolling sorry message">
+      <p>I'm really sorry ❤️ Please forgive me ❤️ I love you ❤️</p>
     </div>
-    <script src="script.js"></script>
+    <div class="message">
+      <p>My heart beats only for you <span class="heart">❤️</span><br>I'm sorry for hurting you. Please give me a chance to make things right.</p>
+    </div>
+  </div>
+
+<script>
+  // JavaScript for interaction
+  document.querySelector('.container').addEventListener('click', () => {
+    alert("I truly mean it. Please forgive me.");
+  });
+</script>
 </body>
 </html>
