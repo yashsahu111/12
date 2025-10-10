@@ -15,48 +15,88 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: hidden;
-    color: #5a2a27;
     background-color: #fce8e6;
+    color: #5a2a27;
   }
 
-  .container {
-    width: 90%;
-    max-width: 400px;
-    padding: 30px 40px;
-    background: #fff8f7;
+  .letter {
+    width: 350px;
+    height: 500px;
+    perspective: 1500px;
+    cursor: pointer;
+  }
+
+  .letter-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  }
+
+  .letter.open .letter-inner {
+    transform: rotateY(-180deg);
+  }
+
+  .letter-front,
+  .letter-back {
+    width: 100%;
+    height: 100%;
     border-radius: 15px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    backface-visibility: hidden;
     box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    transform-origin: top center;
-    animation: openLetter 1.2s ease forwards;
-    opacity: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
   }
 
-  @keyframes openLetter {
-    0% {
-      transform: rotateX(-90deg);
-      opacity: 0;
-    }
-    100% {
-      transform: rotateX(0deg);
-      opacity: 1;
-    }
+  .letter-front {
+    background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    background-color: #fef6e4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #ad3b3b;
+    text-shadow: 1px 1px 2px #fff;
+    user-select: none;
+    padding: 20px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .letter-back {
+    background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    background-color: #fff8f7;
+    transform: rotateY(180deg);
+    padding: 40px 30px;
+    box-sizing: border-box;
+    font-family: 'Great Vibes', cursive;
+    color: #702c2c;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .scrolling-text {
     white-space: nowrap;
     overflow: hidden;
     box-sizing: border-box;
-    margin-bottom: 25px;
+    width: 100%;
     border-bottom: 2px solid #e09e9e;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   .scrolling-text p {
     display: inline-block;
     padding-left: 100%;
     animation: scroll-left 15s linear infinite;
-    font-size: 1.7rem;
+    font-size: 1.6rem;
     font-weight: 600;
     letter-spacing: 0.1em;
     color: #ad3b3b;
@@ -75,13 +115,15 @@
     font-size: 1.4rem;
     line-height: 1.6;
     text-align: center;
+    margin-top: 10px;
     color: #702c2c;
   }
 
   .heart {
     color: #d94343;
-    font-size: 2.3rem;
+    font-size: 2.5rem;
     animation: pulse 1.6s infinite;
+    margin-top: 10px;
   }
 
   @keyframes pulse {
@@ -95,18 +137,33 @@
 </style>
 </head>
 <body>
-  <div class="container">
-    <div class="scrolling-text" aria-label="Scrolling sorry message">
-      <p>I'm really sorry ❤️ Please forgive me ❤️ I love you ❤️</p>
-    </div>
-    <div class="message">
-      <p>My heart beats only for you <span class="heart">❤️</span><br>I'm sorry for hurting you. Please give me a chance to make things right.</p>
+  <div class="letter" aria-label="Sorry letter" tabindex="0">
+    <div class="letter-inner">
+      <div class="letter-front">
+        Click to Open My Letter 💌
+      </div>
+      <div class="letter-back">
+        <div class="scrolling-text" aria-label="Scrolling sorry message">
+          <p>I'm really sorry ❤️ Please forgive me ❤️ I love you ❤️</p>
+        </div>
+        <div class="message">
+          <p>My heart beats only for you <span class="heart">❤️</span><br>I'm sorry for hurting you. Please give me a chance to make things right.</p>
+        </div>
+      </div>
     </div>
   </div>
 
 <script>
-  document.querySelector('.container').addEventListener('click', () => {
-    alert("I truly mean it. Please forgive me.");
+  const letter = document.querySelector('.letter');
+  letter.addEventListener('click', () => {
+    letter.classList.toggle('open');
+  });
+  // accessibility: toggle on enter or space key
+  letter.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      letter.classList.toggle('open');
+    }
   });
 </script>
 </body>
