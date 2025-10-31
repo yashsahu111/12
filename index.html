@@ -60,7 +60,7 @@ const db = getDatabase(app);
 
 // USER LOGIN CREDENTIALS
 const users = {
-  "Yash": "Yash",
+  "Yash": "Yasd",
   "Shagun": "Shagun"
 };
 
@@ -116,7 +116,12 @@ let state = {};
 const listEl = document.getElementById("taskList");
 
 function sync(id, val){
-  set(ref(db,`tasks/${id}`),{
+  set(ref(db,`tasks/${currentUser}/${id}`),{
+    value: val,
+    time: Date.now(),
+    updatedBy: currentUser
+  });
+}`),{
     value: val,
     time: Date.now(),
     updatedBy: currentUser
@@ -171,8 +176,10 @@ document.body.addEventListener("click",e=>{
   if(mood) setMood(id,mood,e.target); else completeTask(id,e.target);
 });
 
-onValue(ref(db,"tasks"),snap=>{
-  if(snap.exists()) state = snap.val();
+onValue(ref(db,`tasks/${currentUser}`), snap => {
+  if (snap.exists()) state = snap.val(); else state = {};
+  render();
+});
   render();
 });
 
