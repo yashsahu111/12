@@ -1,170 +1,161 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sorry Letter</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-
-  body {
-    margin: 0;
-    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-    font-family: 'Great Vibes', cursive;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #fce8e6;
-    color: #5a2a27;
-  }
-
-  .letter {
-    width: 350px;
-    height: 500px;
-    perspective: 1500px;
-    cursor: pointer;
-  }
-
-  .letter-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 1.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
-  }
-
-  .letter.open .letter-inner {
-    transform: rotateY(-180deg);
-  }
-
-  .letter-front,
-  .letter-back {
-    width: 100%;
-    height: 100%;
-    border-radius: 15px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    backface-visibility: hidden;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-    background-size: cover;
-    background-repeat: no-repeat;
-  }
-
-  .letter-front {
-    background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-    background-color: #fef6e4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2.2rem;
-    font-weight: 600;
-    color: #ad3b3b;
-    text-shadow: 1px 1px 2px #fff;
-    user-select: none;
-    padding: 20px;
-    text-align: center;
-    box-sizing: border-box;
-  }
-
-  .letter-back {
-    background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-    background-color: #fff8f7;
-    transform: rotateY(180deg);
-    padding: 40px 30px;
-    box-sizing: border-box;
-    font-family: 'Great Vibes', cursive;
-    color: #702c2c;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .scrolling-text {
-    white-space: nowrap;
-    overflow: hidden;
-    box-sizing: border-box;
-    width: 100%;
-    border-bottom: 2px solid #e09e9e;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-  }
-
-  .scrolling-text p {
-    display: inline-block;
-    padding-left: 100%;
-    animation: scroll-left 15s linear infinite;
-    font-size: 1.6rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    color: #ad3b3b;
-  }
-
-  @keyframes scroll-left {
-    0% {
-      transform: translateX(0%);
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daily Task Sync</title>
+  <style>
+    :root{
+      --bg:#0f1724;--card:#121b2d;--accent:#7c5cff;--muted:#9aa6b2;--radius:12px;
+      --font:Inter,system-ui;
     }
-    100% {
-      transform: translateX(-100%);
+    *{box-sizing:border-box;margin:0;padding:0} body{
+      font-family:var(--font);background:var(--bg);color:#fff;display:flex;
+      flex-direction:column;align-items:center;padding:40px 20px;
     }
-  }
-
-  .message {
-    font-size: 1.4rem;
-    line-height: 1.6;
-    text-align: center;
-    margin-top: 10px;
-    color: #702c2c;
-  }
-
-  .heart {
-    color: #d94343;
-    font-size: 2.5rem;
-    animation: pulse 1.6s infinite;
-    margin-top: 10px;
-  }
-
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
+    h1{font-size:1.8rem;margin-bottom:20px;text-align:center}
+    .task-box{
+      background:var(--card);padding:20px;border-radius:var(--radius);
+      max-width:400px;width:100%;box-shadow:0 8px 20px rgba(0,0,0,.3);
     }
-    50% {
-      transform: scale(1.4);
+    .task{display:flex;align-items:center;justify-content:space-between;
+      padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);
     }
-  }
-</style>
+    .task:last-child{border-bottom:none}
+    button{
+      padding:6px 12px;border:none;border-radius:var(--radius);
+      background:var(--accent);color:#fff;cursor:pointer;transition:.2s;
+      font-size:.85rem;
+    }
+    button[disabled]{opacity:.4;cursor:not-allowed}
+    #log{margin-top:20px;font-size:.9rem;color:var(--muted)}
+  </style>
 </head>
 <body>
-  <div class="letter" aria-label="Sorry letter" tabindex="0">
-    <div class="letter-inner">
-      <div class="letter-front">
-        Click to Open My Letter 💌
-      </div>
-      <div class="letter-back">
-        <div class="scrolling-text" aria-label="Scrolling sorry message">
-          <p>I'm really sorry ❤️ Please forgive me ❤️ I love you ❤️</p>
-        </div>
-        <div class="message">
-          <p>My heart beats only for you <span class="heart">❤️</span><br>I'm sorry for hurting you. Please give me a chance to make things right.</p>
-        </div>
-      </div>
-    </div>
+  <h1>Daily Tasks ✅</h1>
+
+  <div class="task-box" id="taskList">
+    <!-- Tasks will be injected here via JS -->
   </div>
 
-<script>
-  const letter = document.querySelector('.letter');
-  letter.addEventListener('click', () => {
-    letter.classList.toggle('open');
+  <p id="log"></p>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDB_MCfhRogp9_uUgMZeBcYBgj7K6NoPNU",
+  authDomain: "tt-31219.firebaseapp.com",
+  databaseURL: "https://tt-31219-default-rtdb.firebaseio.com",
+  projectId: "tt-31219",
+  storageBucket: "tt-31219.firebasestorage.app",
+  messagingSenderId: "194072423805",
+  appId: "1:194072423805:web:f9825d0ec84758ae6ab014"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// remember user locally (no switching ui)
+let currentUser = localStorage.getItem("taskUser") || "user1";
+localStorage.setItem("taskUser", currentUser);
+
+const tasks = [
+  { id: 1, name: "Khana kha liya?" },
+  { id: 2, name: "Kesi ho?", type: "text" },
+  { id: 3, name: "Dhyan rakhna" },
+  { id: 4, name: "Padhai hogyi?" }
+];
+
+const moodOptions = [
+  { label: "Badhiya", emoji: "😎" },
+  { label: "Achhi hu", emoji: "😊" },
+  { label: "Thik hu", emoji: "🙂" },
+  { label: "Thik thak", emoji: "😐" },
+  { label: "Mood off", emoji: "😔" }
+];
+
+let state = {};
+const listEl = document.getElementById("taskList");
+const logEl = document.getElementById("log");
+
+function sync(id, val){
+  set(ref(db,`tasks/${id}`),{
+    value:val,
+    time:Date.now(),
+    updatedBy: currentUser
   });
-  // accessibility: toggle on enter or space key
-  letter.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      letter.classList.toggle('open');
+}
+
+function glow(btn){
+  btn.style.boxShadow = "0 0 15px #7c5cff";
+  setTimeout(()=>btn.style.boxShadow="",600);
+}
+
+function completeTask(id, btn){
+  sync(id,"done");
+  glow(btn);
+}
+
+function setMood(id,mood,btn){
+  sync(id,mood);
+  glow(btn);
+}
+
+function formatTime(t){
+  return new Date(t).toLocaleTimeString();
+}
+
+function render(){
+  listEl.innerHTML="";
+  tasks.forEach(t=>{
+    const row=document.createElement("div");
+    row.className="task";
+    const entry = state[t.id];
+
+    if(t.type==="text"){
+      let html=`<span>${t.name}</span><div style='display:flex;gap:6px;flex-wrap:wrap;'>`;
+      moodOptions.forEach(o=>{
+        const active = entry?.value === `${o.label} ${o.emoji}`;
+        html += `<button data-id='${t.id}' data-val='${o.label} ${o.emoji}' style='padding:6px 10px;font-size:.8rem;${active?"outline:2px solid var(--accent);" :""}'>${o.emoji} ${o.label}</button>`;
+      });
+      html+=`</div>`;
+      row.innerHTML = html;
+    } else {
+      row.innerHTML = `<span>${t.name}</span><button data-id='${t.id}' ${entry?.value?"disabled":''}>${entry?.value?"Done":"Mark"}</button>`;
     }
+
+    if(entry?.time){
+      const info=document.createElement("div");
+      info.style.fontSize=".7rem";
+      info.style.color="var(--muted)";
+      info.textContent = `Updated by ${entry.updatedBy} at ${formatTime(entry.time)}`;
+      row.appendChild(info);
+    }
+
+    listEl.appendChild(row);
   });
+}
+
+document.body.addEventListener("click",e=>{
+  if(e.target.tagName!="BUTTON") return;
+  const id = e.target.getAttribute("data-id");
+  const mood = e.target.getAttribute("data-val");
+  if(!id) return;
+  if(mood) setMood(id,mood,e.target);
+  else completeTask(id,e.target);
+});
+
+onValue(ref(db,"tasks"),snap=>{
+  if(snap.exists()){
+    state = snap.val();
+  }
+  render();
+});
+
+render();
+logEl.textContent = `Logged in as: ${currentUser}`;
 </script>
 </body>
 </html>
