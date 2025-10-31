@@ -58,29 +58,51 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// remember user locally (no switching ui)
-// ---- USER ASSIGNMENT FIX ----
-let currentUser = localStorage.getItem("taskUser");
+// USER LOGIN CREDENTIALS
+const users = {
+  "Yash": "Yash",
+  "Shagun": "Shagun"
+};
 
-async function assignUser() {
-  const snap = await fetch("https://tt-31219-default-rtdb.firebaseio.com/tasks.json")
-    .then(r => r.json())
-    .catch(() => ({}));
+// LOGIN UI
+const badge = document.getElementById("userBadge");
+const container = document.body;
+let currentUser = localStorage.getItem("loggedUser");
 
-  if (!currentUser) {
-    // If user1 has already written tasks, assign user2
-    if (snap && Object.values(snap).some(entry => entry.updatedBy === "user1")) {
-      currentUser = "user2";
+function showLogin(){
+  container.innerHTML = `
+    <h2 style="margin-bottom:15px;">Login to Continue</h2>
+    <div style='background:#121b2d;padding:20px;border-radius:10px;max-width:280px;width:100%;'>
+      <input id='u' placeholder='Username' style='width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:none;'>
+      <input id='p' type='password' placeholder='Password' style='width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:none;'>
+      <button id='loginBtn' style='width:100%;padding:10px;border:none;border-radius:6px;background:#7c5cff;color:#fff;'>Login</button>
+    </div>
+  `;
+
+  document.getElementById("loginBtn").onclick = () => {
+    const u = document.getElementById("u").value.trim();
+    const p = document.getElementById("p").value.trim();
+
+    if(users[u] && users[u] === p){
+      localStorage.setItem("loggedUser", u);
+      location.reload();
     } else {
-      currentUser = "user1";
+      alert("Wrong username or password");
     }
-
-    localStorage.setItem("taskUser", currentUser);
-    location.reload(); // ensure UI refresh with assigned user
-  }
+  };
 }
 
-await assignUser();
+if(!currentUser){ showLogin(); }
+
+// TASK APP AFTER LOGIN
+badge.textContent = `You are: ${currentUser} ✅`;
+
+const tasks = [
+  { id: 1, name: "Khana kha liya?" },
+  { id: 2, name: "Kesi ho?", type: "text" },
+  { id: 3, name: "Dhyan rakhna" },
+  { id: 4, name: "Padhai hogyi?" }
+];
 
 const moodOptions = [
   { label: "Badhiya", emoji: "😎" },
@@ -92,12 +114,11 @@ const moodOptions = [
 
 let state = {};
 const listEl = document.getElementById("taskList");
-const logEl = document.getElementById("log");
 
 function sync(id, val){
   set(ref(db,`tasks/${id}`),{
-    value:val,
-    time:Date.now(),
+    value: val,
+    time: Date.now(),
     updatedBy: currentUser
   });
 }
@@ -107,32 +128,22 @@ function glow(btn){
   setTimeout(()=>btn.style.boxShadow="",600);
 }
 
-function completeTask(id, btn){
-  sync(id,"done");
-  glow(btn);
-}
+function completeTask(id, btn){ sync(id,"done"); glow(btn);} 
+function setMood(id,mood,btn){ sync(id,mood); glow(btn);} 
 
-function setMood(id,mood,btn){
-  sync(id,mood);
-  glow(btn);
-}
-
-function formatTime(t){
-  return new Date(t).toLocaleTimeString();
-}
+function formatTime(t){ return new Date(t).toLocaleTimeString(); }
 
 function render(){
   listEl.innerHTML="";
   tasks.forEach(t=>{
-    const row=document.createElement("div");
-    row.className="task";
+    const row=document.createElement("div"); row.className="task";
     const entry = state[t.id];
 
     if(t.type==="text"){
       let html=`<span>${t.name}</span><div style='display:flex;gap:6px;flex-wrap:wrap;'>`;
       moodOptions.forEach(o=>{
         const active = entry?.value === `${o.label} ${o.emoji}`;
-        html += `<button data-id='${t.id}' data-val='${o.label} ${o.emoji}' style='padding:6px 10px;font-size:.8rem;${active?"outline:2px solid var(--accent);" :""}'>${o.emoji} ${o.label}</button>`;
+        html += `<button data-id='${t.id}' data-val='${o.label} ${o.emoji}' style='padding:6px 10px;font-size:.8rem;${active?"outline:2px solid #7c5cff;" :""}'>${o.emoji} ${o.label}</button>`;
       });
       html+=`</div>`;
       row.innerHTML = html;
@@ -157,21 +168,20 @@ document.body.addEventListener("click",e=>{
   const id = e.target.getAttribute("data-id");
   const mood = e.target.getAttribute("data-val");
   if(!id) return;
-  if(mood) setMood(id,mood,e.target);
-  else completeTask(id,e.target);
+  if(mood) setMood(id,mood,e.target); else completeTask(id,e.target);
 });
 
 onValue(ref(db,"tasks"),snap=>{
-  if(snap.exists()){
-    state = snap.val();
-  }
+  if(snap.exists()) state = snap.val();
   render();
-document.getElementById("userBadge").textContent = `You are: ${currentUser} ✅`;
 });
 
-render();
-logEl.textContent = `Logged in as: ${currentUser}`;
+// Add logout
+const logoutBtn=document.createElement("button");
+logoutBtn.textContent="Logout";
+logoutBtn.style="margin-top:15px;background:#ff4e4e;";
+logoutBtn.onclick=()=>{localStorage.removeItem("loggedUser"); location.reload();};
+document.body.appendChild(logoutBtn);
 </script>
 </body>
 </html>
-
