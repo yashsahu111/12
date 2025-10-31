@@ -33,6 +33,7 @@
 </head>
 <body>
   <h1>Daily Tasks ✅</h1>
+  <div id="userBadge" style="margin-bottom:10px;font-size:0.9rem;color:#a3b5ff;background:#1c2542;padding:6px 12px;border-radius:8px;display:inline-block;border:1px solid #2e3b69;">Loading user...</div>
 
   <div class="task-box" id="taskList">
     <!-- Tasks will be injected here via JS -->
@@ -152,6 +153,7 @@ onValue(ref(db,"tasks"),snap=>{
     state = snap.val();
   }
   render();
+document.getElementById("userBadge").textContent = `You are: ${currentUser} ✅`;
 });
 
 render();
