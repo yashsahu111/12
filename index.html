@@ -59,15 +59,28 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // remember user locally (no switching ui)
-let currentUser = localStorage.getItem("taskUser") || "user1";
-localStorage.setItem("taskUser", currentUser);
+// ---- USER ASSIGNMENT FIX ----
+let currentUser = localStorage.getItem("taskUser");
 
-const tasks = [
-  { id: 1, name: "Khana kha liya?" },
-  { id: 2, name: "Kesi ho?", type: "text" },
-  { id: 3, name: "Dhyan rakhna" },
-  { id: 4, name: "Padhai hogyi?" }
-];
+async function assignUser() {
+  const snap = await fetch("https://tt-31219-default-rtdb.firebaseio.com/tasks.json")
+    .then(r => r.json())
+    .catch(() => ({}));
+
+  if (!currentUser) {
+    // If user1 has already written tasks, assign user2
+    if (snap && Object.values(snap).some(entry => entry.updatedBy === "user1")) {
+      currentUser = "user2";
+    } else {
+      currentUser = "user1";
+    }
+
+    localStorage.setItem("taskUser", currentUser);
+    location.reload(); // ensure UI refresh with assigned user
+  }
+}
+
+await assignUser();
 
 const moodOptions = [
   { label: "Badhiya", emoji: "😎" },
@@ -161,3 +174,4 @@ logEl.textContent = `Logged in as: ${currentUser}`;
 </script>
 </body>
 </html>
+
