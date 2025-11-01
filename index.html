@@ -166,13 +166,9 @@ body{
 
           <h2>My Love,</h2>
 
-          <p id="t1"></p>
-          <p id="t2"></p>
-          <p id="t3"></p>
+          <!-- The paragraphs will appear here dynamically -->
+<div id="letterBox"></div>
 
-          <p style="margin-top:12px;">
-            Forever yours,<br><strong>Yash</strong>
-          </p>
         </div>
       </div>
     </div>
@@ -242,11 +238,44 @@ function openEnvelope(){
   // reveal letter (CSS)
   // type apology text
    
- type("t1","Main jaanta hoon ki maine galti ki… aur jitna tum dukhi hui, utna hi mujhe bhi laga.",300);
- type("t2","Mera kabhi intention nahi tha tumhe hurt karne ka. Bas kabhi kabhi main samajhne mein late ho jata hoon.",2100);
- type("t3","Tum meri life ka sabse pyara hissa ho. Aur tumhari ek chhoti si udaasi bhi mujhe andar se tod deti hai.",4200);
- type("t4","Mujhe tumhe hamesha respect, love aur peace deni hai. Main better ban raha hoon — tumhaare liye, hum dono ke liye.",6500);
- type("t5","Bas ek request… mujhe ek aur chance do tumhe proud feel karane ka. I love you… forever.",9000);
+// show full heartfelt letter line by line
+const fullLetter = [
+  "My Love,",
+  "",
+  "Main jaanta hoon ki maine galti ki… aur jitna tum dukhi hui, utna hi mujhe bhi laga. Shayad main kabhi kabhi baaton ko samajhne mein late ho jata hoon, par dil se kabhi tumhe hurt karne ka intention nahi tha.",
+  "",
+  "Tum meri life ka woh hissa ho jise main sabse zyada protect karna chahta hoon. Aur jab wahi insaan meri wajah se hurt ho jaye, toh dil toot jata hai.",
+  "",
+  "Mujhe pata hai ki sirf “sorry” bol dena enough nahi hota… par main sach bol raha hoon, main improve ho raha hoon. Main apni ego, attitude aur stupid reactions ko peeche chhod raha hoon — kyunki tum value karti ho, aur tum jaise insaan humesha deserve karte ho respect, love aur peace.",
+  "",
+  "Tumhari muskaan mere din ka best part hoti hai, tumhara naraz hona… sab kuch grey sa lagne lagta hai. Mujhe tumhe woh saari khushiyaan deni hain jo tum deserve karti ho.",
+  "",
+  "Har baar jab tum hasti ho, mujhe lagta hai duniya thodi aur sundar ho gayi. Har baar jab tum thoda sa bhi hurt hoti ho, mere andar kuch toot jata hai.",
+  "",
+  "Bas ek chhoti si request — mujhe ek aur chance do tumhe proud feel karane ka. Main promise karta hoon…",
+  "",
+  "• Main zyada samajhunga\n• Kam react karunga\n• Zyada feel karunga\n• Aur tumhe kabhi akela ya undervalued feel nahi hone dunga",
+  "",
+  "Tum meri kahani ho, aur main tumhara favourite chapter banna chahta hoon — hamesha ke liye.",
+  "",
+  "I love you — not just for now, but for every tomorrow.",
+  "",
+  "Hamesha tumhara,\nYash ❤️"
+];
+
+let lineIndex = 0;
+function revealLine() {
+  if (lineIndex >= fullLetter.length) return;
+  const p = document.createElement("p");
+  p.style.opacity = "0";
+  p.textContent = fullLetter[lineIndex];
+  letterBox.appendChild(p);
+  requestAnimationFrame(()=>{ p.style.transition = "opacity .7s"; p.style.opacity = "1"; });
+  lineIndex++;
+  setTimeout(revealLine, 900);
+}
+revealLine();
+
 
   // reveal letter visually
   setTimeout(()=> letterBox.classList.add('show'),350);
@@ -354,4 +383,5 @@ document.addEventListener('keydown', (e)=>{
 </script>
 </body>
 </html>
+
 
