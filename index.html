@@ -2,193 +2,315 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Daily Task Sync</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>I'm Sorry — A Letter to You</title>
   <style>
     :root{
-      --bg:#0f1724;--card:#121b2d;--accent:#7c5cff;--muted:#9aa6b2;--radius:12px;
-      --font:Inter,system-ui;
+      --bg:#fff5f8;
+      --card:#ffffff;
+      --rose:#ff6b9a;
+      --deep:#ff2d6f;
+      --accent:#ffd6e8;
+      --muted:#6b6b6b;
+      --glass: rgba(255,255,255,0.6);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
-    *{box-sizing:border-box;margin:0;padding:0} body{
-      font-family:var(--font);background:var(--bg);color:#fff;display:flex;
-      flex-direction:column;align-items:center;padding:40px 20px;
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(255,220,235,0.6), transparent),
+                  radial-gradient(800px 400px at 90% 90%, rgba(255,240,230,0.5), transparent),
+                  var(--bg);
+      display:flex;align-items:center;justify-content:center;
+      padding:40px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      color:#222;
     }
-    h1{font-size:1.8rem;margin-bottom:20px;text-align:center}
-    .task-box{
-      background:var(--card);padding:20px;border-radius:var(--radius);
-      max-width:400px;width:100%;box-shadow:0 8px 20px rgba(0,0,0,.3);
+
+    .stage{
+      width:100%;max-width:980px;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;
     }
-    .task{display:flex;align-items:center;justify-content:space-between;
-      padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.85));
+      border-radius:20px;padding:36px;box-shadow:0 12px 40px rgba(255,90,140,0.08);
+      position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.6);
     }
-    .task:last-child{border-bottom:none}
-    button{
-      padding:6px 12px;border:none;border-radius:var(--radius);
-      background:var(--accent);color:#fff;cursor:pointer;transition:.2s;
-      font-size:.85rem;
+
+    .hero{
+      padding:18px 26px;border-radius:16px;background:linear-gradient(120deg,var(--accent), rgba(255,255,255,0.7));
+      box-shadow: inset 0 -6px 40px rgba(255,200,220,0.2);
+      margin-bottom:18px;backdrop-filter: blur(6px);
     }
-    button[disabled]{opacity:.4;cursor:not-allowed}
-    #log{margin-top:20px;font-size:.9rem;color:var(--muted)}
+
+    h1{font-size:36px;margin:6px 0 6px;letter-spacing:-0.02em;color:var(--deep)}
+    p.lead{margin:0;color:var(--muted);font-size:15px}
+
+    .message{
+      font-size:16px;line-height:1.55;color:#333;margin-top:14px;margin-bottom:18px;
+    }
+
+    .sincere{
+      font-style:italic;color:#6b2b47;margin-top:6px;font-size:15px;
+    }
+
+    .controls{display:flex;gap:12px;align-items:center;margin-top:18px}
+
+    .btn{
+      border:0;padding:12px 18px;border-radius:999px;font-weight:600;cursor:pointer;transition:transform .18s ease, box-shadow .18s;
+      background:linear-gradient(90deg,var(--rose),var(--deep));color:white;box-shadow:0 8px 30px rgba(255,70,120,0.18);
+    }
+    .btn:active{transform:translateY(2px)}
+
+    .ghost{background:transparent;border:1px solid rgba(120,60,80,0.08);color:var(--deep);}
+
+    /* Right column */
+    .side{
+      display:flex;flex-direction:column;gap:14px;align-items:center;
+    }
+
+    .envelope{
+      width:100%;max-width:360px;height:230px;border-radius:14px;background:linear-gradient(180deg,#fff,#ffeef6);
+      display:flex;align-items:center;justify-content:center;position:relative;padding:18px;box-shadow:0 10px 35px rgba(255,100,150,0.09);
+    }
+
+    .heart-big{position:absolute;right:18px;top:8px;transform:rotate(-10deg);opacity:0.95}
+
+    /* Floating hearts */
+    .hearts{position:absolute;inset:0;pointer-events:none}
+    .heart{
+      position:absolute;width:14px;height:14px;transform:translate(-50%,-50%) rotate(45deg);background:var(--deep);border-radius:3px;opacity:0.9;
+    }
+    .heart:before,.heart:after{content:'';position:absolute;width:14px;height:14px;background:var(--deep);border-radius:50%}
+    .heart:before{top:-7px;left:0}
+    .heart:after{left:7px;top:0}
+
+    /* typed note */
+    .note{background:linear-gradient(180deg,#fff,#fff7fb);padding:18px;border-radius:12px;width:100%;min-height:140px;box-shadow:inset 0 2px 0 rgba(0,0,0,0.02)}
+    .note p{margin:0;font-size:15px;color:#2c1b2b}
+
+    .signature{display:flex;align-items:center;gap:12px;margin-top:16px}
+    .avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--deep));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+
+    footer.small{font-size:12px;color:var(--muted);margin-top:12px}
+
+    /* Animations */
+    @keyframes floatUp{0%{transform:translateY(0) scale(1);opacity:0.95}100%{transform:translateY(-420px) scale(.7);opacity:0}}
+
+    /* responsive */
+    @media (max-width:880px){
+      .stage{grid-template-columns:1fr;}
+      .side{order:-1}
+    }
   </style>
 </head>
 <body>
-  <h1>Daily Tasks ✅</h1>
-  <div id="userBadge" style="margin-bottom:10px;font-size:0.9rem;color:#a3b5ff;background:#1c2542;padding:6px 12px;border-radius:8px;display:inline-block;border:1px solid #2e3b69;">Loading user...</div>
+  <div class="stage">
+    <div class="card">
+      <div class="hero">
+        <h1>I'm sorry</h1>
+        <p class="lead">These words are small, but my intention is not. I hurt you — and I want to make it right.</p>
+      </div>
 
-  <div class="task-box" id="taskList">
-    <!-- Tasks will be injected here via JS -->
+      <div class="message" id="message">
+        <p>Hey —</p>
+        <p id="typed">I know I caused you pain, and I can't go back and change what I did. But I can be honest, listen, and do better. I miss the warmth between us and I want to rebuild your trust, one honest step at a time.</p>
+        <p class="sincere" id="sincere">— Truly, with love</p>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="apologyButton">Send this apology</button>
+        <button class="btn ghost" id="personalize">Personalize</button>
+        <div style="margin-left:auto;text-align:right">
+          <div style="font-size:12px;color:var(--muted)">Tip: click "Send" to create a keepsake link</div>
+        </div>
+      </div>
+
+      <div class="note" id="note">
+        <p contenteditable="true" id="customText" aria-label="Edit this note">If you'd like, write something from your heart here. Keep it simple and truthful — that'll mean the most.</p>
+        <div class="signature">
+          <div class="avatar" id="initial">Y</div>
+          <div>
+            <div style="font-weight:700">You</div>
+            <div style="font-size:13px;color:var(--muted)">Tap the text above to edit. When ready, press Send.</div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="small">Made with care — a simple page to say what matters. ✨</footer>
+    </div>
+
+    <div class="side">
+      <div class="envelope" aria-hidden="true">
+        <!-- Decorative heart SVG -->
+        <svg class="heart-big" width="110" height="110" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12.1 21.35l-1.1-.99C5.14 15.36 2 12.28 2 8.5 2 6 3.99 4 6.5 4c1.54 0 3.04.99 3.57 2.36h.87C14.46 4.99 15.96 4 17.5 4 20.01 4 22 6 22 8.5c0 3.78-3.14 6.86-8.9 11.86l-1 1z" fill="url(#g)" />
+          <defs>
+            <linearGradient id="g" x1="0" x2="1">
+              <stop offset="0" stop-color="#ff9bb5"/>
+              <stop offset="1" stop-color="#ff3b6f"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div style="text-align:center;max-width:260px">
+          <h3 style="margin:6px 0;color:var(--deep)">A little keepsake</h3>
+          <p style="margin:0;color:var(--muted)">Click the heart to send a gentle, honest message. No pressure — only truth.</p>
+        </div>
+      </div>
+
+      <button class="btn" id="heartSend">💌 Send Heart</button>
+      <div style="font-size:13px;color:var(--muted);text-align:center;padding:6px 10px">Or press <strong>Send this apology</strong> to create a shareable note.</div>
+
+      <div style="width:100%;height:120px;position:relative">
+        <canvas id="confettiCanvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      </div>
+    </div>
+
+    <!-- floating hearts container -->
+    <div class="hearts" id="hearts"></div>
   </div>
 
-  <p id="log"></p>
+  <script>
+  // Simple floating hearts generator
+  const heartsContainer = document.getElementById('hearts');
+  function spawnHeart(){
+    const h = document.createElement('div');
+    h.className = 'heart';
+    const x = Math.random()*100; // percent
+    h.style.left = x + '%';
+    h.style.top = 100 + '%';
+    const size = 8 + Math.random()*20;
+    h.style.width = size + 'px'; h.style.height = size + 'px';
+    h.style.opacity = 0.8 + Math.random()*0.2;
+    heartsContainer.appendChild(h);
+    const delay = 500 + Math.random()*1200;
+    h.animate([
+      { transform: `translateY(0) scale(1)`, opacity: 1 },
+      { transform: `translateY(-420px) scale(.6)`, opacity: 0 }
+    ], { duration: 3000 + Math.random()*3000, easing: 'cubic-bezier(.2,.8,.2,1)', delay });
+    setTimeout(()=>{ h.remove() }, 4000 + Math.random()*4000 + delay);
+  }
+  // spawn a few initially and then on interval
+  for(let i=0;i<8;i++) setTimeout(spawnHeart, i*300);
+  setInterval(spawnHeart, 900);
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+  // Typing effect for the opening paragraph (gentle)
+  function typeText(el, text, speed=18){
+    el.textContent = '';
+    let i=0;
+    const t = setInterval(()=>{
+      el.textContent += text.charAt(i);
+      i++;
+      if(i>=text.length) clearInterval(t);
+    }, speed);
+  }
+  const typed = document.getElementById('typed');
+  const original = typed.textContent;
+  typed.textContent='';
+  typeText(typed, original, 12);
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDB_MCfhRogp9_uUgMZeBcYBgj7K6NoPNU",
-  authDomain: "tt-31219.firebaseapp.com",
-  databaseURL: "https://tt-31219-default-rtdb.firebaseio.com",
-  projectId: "tt-31219",
-  storageBucket: "tt-31219.firebasestorage.app",
-  messagingSenderId: "194072423805",
-  appId: "1:194072423805:web:f9825d0ec84758ae6ab014"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-// USER LOGIN CREDENTIALS
-const users = {
-  "Yash": "Yasd",
-  "Shagun": "Shagun"
-};
-
-// LOGIN UI
-const badge = document.getElementById("userBadge");
-const container = document.body;
-let currentUser = localStorage.getItem("loggedUser");
-
-function showLogin(){
-  container.innerHTML = `
-    <h2 style="margin-bottom:15px;">Login to Continue</h2>
-    <div style='background:#121b2d;padding:20px;border-radius:10px;max-width:280px;width:100%;'>
-      <input id='u' placeholder='Username' style='width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:none;'>
-      <input id='p' type='password' placeholder='Password' style='width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:none;'>
-      <button id='loginBtn' style='width:100%;padding:10px;border:none;border-radius:6px;background:#7c5cff;color:#fff;'>Login</button>
-    </div>
-  `;
-
-  document.getElementById("loginBtn").onclick = () => {
-    const u = document.getElementById("u").value.trim();
-    const p = document.getElementById("p").value.trim();
-
-    if(users[u] && users[u] === p){
-      localStorage.setItem("loggedUser", u);
-      location.reload();
-    } else {
-      alert("Wrong username or password");
-    }
-  };
-}
-
-if(!currentUser){ showLogin(); }
-
-// TASK APP AFTER LOGIN
-badge.textContent = `You are: ${currentUser} ✅`;
-
-const tasks = [
-  { id: 1, name: "Khana kha liya?" },
-  { id: 2, name: "Kesi ho?", type: "text" },
-  { id: 3, name: "Dhyan rakhna" },
-  { id: 4, name: "Padhai hogyi?" }
-];
-
-const moodOptions = [
-  { label: "Badhiya", emoji: "😎" },
-  { label: "Achhi hu", emoji: "😊" },
-  { label: "Thik hu", emoji: "🙂" },
-  { label: "Thik thak", emoji: "😐" },
-  { label: "Mood off", emoji: "😔" }
-];
-
-let state = {};
-const listEl = document.getElementById("taskList");
-
-function sync(id, val){
-  set(ref(db,`tasks/${currentUser}/${id}`),{
-    value: val,
-    time: Date.now(),
-    updatedBy: currentUser
+  // Personalize button — focus editable area and set initial
+  document.getElementById('personalize').addEventListener('click', ()=>{
+    const c = document.getElementById('customText');
+    c.focus();
+    // move caret to end
+    document.execCommand('selectAll', false, null);
+    document.getSelection().collapseToEnd();
   });
-}`),{
-    value: val,
-    time: Date.now(),
-    updatedBy: currentUser
+
+  // Update initial letter
+  const initials = document.getElementById('initial');
+  const customText = document.getElementById('customText');
+  customText.addEventListener('input', ()=>{
+    const txt = customText.textContent.trim();
+    initials.textContent = txt ? txt.charAt(0).toUpperCase() : 'Y';
   });
-}
 
-function glow(btn){
-  btn.style.boxShadow = "0 0 15px #7c5cff";
-  setTimeout(()=>btn.style.boxShadow="",600);
-}
+  // Simple confetti using canvas — hearts falling briefly
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  function resize(){ canvas.width = canvas.clientWidth*devicePixelRatio; canvas.height = canvas.clientHeight*devicePixelRatio; ctx.scale(devicePixelRatio, devicePixelRatio); }
+  window.addEventListener('resize', resize); resize();
 
-function completeTask(id, btn){ sync(id,"done"); glow(btn);} 
-function setMood(id,mood,btn){ sync(id,mood); glow(btn);} 
+  function Heart(x,y,vy,life,scale){ this.x=x;this.y=y;this.vy=vy;this.life=life;this.scale=scale }
+  Heart.prototype.draw = function(){
+    const s=this.scale; const x=this.x; const y=this.y;
+    ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+    ctx.beginPath(); ctx.moveTo(0,-8); ctx.bezierCurveTo(8,-20,30,-10,30,6); ctx.bezierCurveTo(30,24,14,34,0,46); ctx.bezierCurveTo(-14,34,-30,24,-30,6); ctx.bezierCurveTo(-30,-10,-8,-20,0,-8);
+    ctx.closePath(); ctx.fillStyle = 'rgba(255,60,110,'+(0.9*this.life)+')'; ctx.fill(); ctx.restore();
+  }
 
-function formatTime(t){ return new Date(t).toLocaleTimeString(); }
-
-function render(){
-  listEl.innerHTML="";
-  tasks.forEach(t=>{
-    const row=document.createElement("div"); row.className="task";
-    const entry = state[t.id];
-
-    if(t.type==="text"){
-      let html=`<span>${t.name}</span><div style='display:flex;gap:6px;flex-wrap:wrap;'>`;
-      moodOptions.forEach(o=>{
-        const active = entry?.value === `${o.label} ${o.emoji}`;
-        html += `<button data-id='${t.id}' data-val='${o.label} ${o.emoji}' style='padding:6px 10px;font-size:.8rem;${active?"outline:2px solid #7c5cff;" :""}'>${o.emoji} ${o.label}</button>`;
-      });
-      html+=`</div>`;
-      row.innerHTML = html;
-    } else {
-      row.innerHTML = `<span>${t.name}</span><button data-id='${t.id}' ${entry?.value?"disabled":''}>${entry?.value?"Done":"Mark"}</button>`;
+  let confetti = [];
+  function triggerConfetti(){
+    confetti = [];
+    for(let i=0;i<18;i++){
+      const x = Math.random()*canvas.clientWidth; const y = Math.random()*-80; const vy = 0.5 + Math.random()*2; const life = 1; const s = 0.7+Math.random()*0.9;
+      confetti.push(new Heart(x,y,vy,life,s));
     }
+  }
+  function tick(){
+    ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
+    confetti.forEach((c,i)=>{
+      c.y += c.vy*2 + Math.random(); c.life -= 0.01; c.draw();
+      if(c.y > canvas.clientHeight+40 || c.life <= 0) confetti.splice(i,1);
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
 
-    if(entry?.time){
-      const info=document.createElement("div");
-      info.style.fontSize=".7rem";
-      info.style.color="var(--muted)";
-      info.textContent = `Updated by ${entry.updatedBy} at ${formatTime(entry.time)}`;
-      row.appendChild(info);
+  // actions when pressing send
+  function createKeepsake(){
+    // For demo: build a short 'keepsake' message and reveal a modal-like toast
+    const note = document.getElementById('customText').textContent.trim();
+    const payload = {
+      message: note || original,
+      from: initials.textContent || 'You',
+      time: new Date().toLocaleString()
+    };
+    // Simple sharebox
+    const box = document.createElement('div');
+    box.style.position='fixed';box.style.left='50%';box.style.top='50%';box.style.transform='translate(-50%,-50%)';
+    box.style.background='white';box.style.padding='18px';box.style.borderRadius='12px';box.style.boxShadow='0 20px 60px rgba(0,0,0,0.15)';box.style.zIndex=9999;box.style.maxWidth='480px';box.style.width='90%';
+    box.innerHTML = `<h3 style="margin:0 0 8px;color:${getComputedStyle(document.documentElement).getPropertyValue('--deep')}">Your keepsake is ready</h3>
+      <p style="color:#444;margin:0 0 12px">You can copy this message and send it — or use the share button if your device supports it.</p>
+      <textarea style="width:100%;height:110px;border-radius:8px;border:1px solid #eee;padding:10px;font-family:inherit">${payload.message}\n\n— ${payload.from} · ${payload.time}</textarea>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+        <button id="closeKeep" style="padding:8px 12px;border-radius:8px;border:0;">Close</button>
+        <button id="shareKeep" style="padding:8px 12px;border-radius:8px;border:0;background:linear-gradient(90deg,var(--rose),var(--deep));color:white;">Share</button>
+      </div>`;
+    document.body.appendChild(box);
+    document.getElementById('closeKeep').onclick = ()=>box.remove();
+    document.getElementById('shareKeep').onclick = async ()=>{
+      const txt = box.querySelector('textarea').value;
+      if(navigator.share){
+        try{ await navigator.share({text:txt}); box.remove(); }
+        catch(e){ alert('Share cancelled') }
+      } else {
+        box.querySelector('textarea').select(); document.execCommand('copy');
+        alert('Kept to clipboard — you can paste it into a message.'); box.remove();
+      }
     }
+    triggerConfetti();
+  }
 
-    listEl.appendChild(row);
+  document.getElementById('apologyButton').addEventListener('click', ()=>{
+    createKeepsake();
   });
-}
 
-document.body.addEventListener("click",e=>{
-  if(e.target.tagName!="BUTTON") return;
-  const id = e.target.getAttribute("data-id");
-  const mood = e.target.getAttribute("data-val");
-  if(!id) return;
-  if(mood) setMood(id,mood,e.target); else completeTask(id,e.target);
-});
+  document.getElementById('heartSend').addEventListener('click', ()=>{
+    triggerConfetti();
+    // small friendly animation
+    const b = document.getElementById('heartSend');
+    b.animate([{transform:'scale(1)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:420});
+    // soft message
+    const old = document.getElementById('sincere');
+    old.textContent = 'Sent with an open heart — I hope we can talk when you’re ready.';
+  });
 
-onValue(ref(db,`tasks/${currentUser}`), snap => {
-  if (snap.exists()) state = snap.val(); else state = {};
-  render();
-});
-  render();
-});
+  // Accessibility: allow Enter on personalize to focus
+  document.getElementById('personalize').addEventListener('keydown', (e)=>{ if(e.key==='Enter') document.getElementById('personalize').click(); });
 
-// Add logout
-const logoutBtn=document.createElement("button");
-logoutBtn.textContent="Logout";
-logoutBtn.style="margin-top:15px;background:#ff4e4e;";
-logoutBtn.onclick=()=>{localStorage.removeItem("loggedUser"); location.reload();};
-document.body.appendChild(logoutBtn);
-</script>
+  </script>
 </body>
 </html>
