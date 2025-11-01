@@ -8,7 +8,6 @@
 <style>
 :root{
   --bg:#fff5f8;
-  --card:#ffffff;
   --rose:#ff6b9a;
   --deep:#ff2d6f;
   --accent:#ffd6e8;
@@ -20,7 +19,6 @@ body{
               radial-gradient(800px 400px at 90% 90%, rgba(255,240,230,0.5), transparent),
               var(--bg);
   font-family: Inter, sans-serif;
-  color:#222;
   padding:20px;
   min-height:100vh;
 }
@@ -61,35 +59,7 @@ h1{
 .message{font-size:15px;color:#2c1b2b;line-height:1.55;margin-top:14px}
 .sincere{font-style:italic;color:#6b2b47;margin-top:8px;font-size:14px}
 
-/* editable note */
-.note{
-  background:#fff;
-  border-radius:12px;
-  padding:14px;
-  margin-top:18px;
-  font-size:15px;
-  min-height:100px;
-  border:1px solid rgba(0,0,0,0.05);
-}
-.note p{margin:0}
-
-/* avatar */
-.signature{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:10px;
-}
-.avatar{
-  width:44px;height:44px;
-  border-radius:50%;
-  background:linear-gradient(135deg,var(--rose),var(--deep));
-  display:flex;
-  align-items:center;justify-content:center;
-  color:white;font-weight:700;font-size:18px;
-}
-
-/* envelope side */
+/* envelope box */
 .envelope{
   width:100%;
   background:linear-gradient(180deg,#fff,#ffeef6);
@@ -130,24 +100,13 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:12px}
   <div class="card">
     <div class="hero">
       <h1>I'm Sorry</h1>
-      <p class="lead">I hurt you, and I truly want to make things right.</p>
+      <p class="lead">I hurt you, and I genuinely want to make things right.</p>
     </div>
 
     <div class="message">
       <p>Hey…</p>
       <p id="typed"></p>
       <p class="sincere">— With love</p>
-    </div>
-
-    <div class="note">
-      <p id="customText" contenteditable="true">Write something from your heart here…</p>
-      <div class="signature">
-        <div class="avatar" id="initial">Y</div>
-        <div>
-          <div style="font-weight:700">You</div>
-          <div style="font-size:12px;color:var(--muted)">Tap text to edit</div>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -158,7 +117,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin-top:12px}
         <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#ff9bb5"/><stop offset="1" stop-color="#ff3b6f"/></linearGradient>
       </defs>
     </svg>
-    <p style="color:#6b2b47;font-size:14px">A gentle apology from the heart.</p>
+    <p style="color:#6b2b47;font-size:14px">I hope this reaches your heart gently.</p>
   </div>
 
   <footer>Made with love ✨</footer>
@@ -173,14 +132,6 @@ const typed = document.getElementById("typed");
 let i=0;
 function type(){ typed.textContent += text.charAt(i); i++; if(i<text.length) setTimeout(type, 25); }
 type();
-
-// update avatar initial
-const initials = document.getElementById('initial');
-const customText = document.getElementById('customText');
-customText.addEventListener('input', ()=>{
-  let txt = customText.textContent.trim();
-  initials.textContent = txt ? txt[0].toUpperCase() : "Y";
-});
 
 // floating hearts
 const hearts = document.getElementById("hearts");
