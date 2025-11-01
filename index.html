@@ -3,431 +3,165 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>I'm Sorry — Bloom & Letter</title>
+<title>For You 💐</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Nunito:wght@300;600&display=swap" rel="stylesheet">
+
 <style>
 :root{
-  --bg1: #bfe9ff;
-  --bg2: #fbe8f0;
-  --card: rgba(255,255,255,0.95);
-  --accent:#b83968;
-  --rose:#ff7aa0;
-  --muted:#6b6b6b;
+ --bg1:#bfe9ff;
+ --bg2:#fbe8f0;
+ --card:rgba(255,255,255,0.95);
+ --accent:#b83968;
+ --muted:#6b6b6b;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
 body{
-  font-family:Nunito, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-  background: linear-gradient(180deg,var(--bg1) 0%, #e9f5ff 35%, var(--bg2) 100%);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  color:#222;
-  padding:18px;
-  overflow-y:auto;
+ font-family:Nunito,sans-serif;
+ background:linear-gradient(180deg,var(--bg1),var(--bg2));
+ padding:16px;min-height:100vh;overflow-y:auto;
 }
-
-/* Page layout */
 .container{
-  max-width:760px;
-  margin:18px auto;
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-  align-items:center;
+ max-width:760px;margin:auto;display:flex;flex-direction:column;
+ gap:18px;align-items:center;
 }
 
-/* Intro area with flower */
+/* Intro box */
 .intro{
-  width:100%;
-  background:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.65));
-  border-radius:14px;
-  padding:18px;
-  box-shadow:0 12px 40px rgba(0,0,0,0.06);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:14px;
-  position:relative;
-  overflow:hidden;
+ background:rgba(255,255,255,0.7);
+ padding:18px;border-radius:14px;text-align:center;
+ box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
+.flower-wrap{height:220px}
+
+/* Buttons */
+.play-btn{
+ background:#ff6a88;border:0;padding:10px 16px;
+ color:#fff;border-radius:999px;font-weight:700;cursor:pointer;
 }
 
-/* Flower SVG container */
-.flower-wrap{width:220px;height:240px;display:flex;align-items:center;justify-content:center}
-svg#flower{width:100%;height:100%}
-/* stem draw */
-.stem{stroke:#3aa46a;stroke-width:4;fill:none;stroke-linecap:round;stroke-dasharray:220;stroke-dashoffset:220;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.08))}
-/* leaves */
-.leaf{transform-origin:center;opacity:0;fill:#66d18f}
-/* petals style: gradient fill via JS applied or use single color */
-.petal{opacity:0;transform-origin:center;filter:drop-shadow(0 6px 18px rgba(255,100,150,0.12))}
-/* center */
-.center{opacity:0;transform-origin:center;}
-
-/* bloom timing */
-.grow-stem{animation:drawStem 2.6s ease forwards}
-@keyframes drawStem{to{stroke-dashoffset:0}}
-.leaf-grow{animation:leafGrow .9s ease forwards}
-@keyframes leafGrow{from{transform:scale(.2) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
-.petal-bloom{animation:bloom 0.9s ease forwards}
-@keyframes bloom{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
-.center-bloom{animation:centerPop .8s ease forwards}
-@keyframes centerPop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
-
-/* message & sparkles */
-.hero-text{font-family:'Great Vibes',cursive;font-size:26px;color:var(--accent);text-align:center;padding:6px 12px}
-.sparkles{position:absolute;top:6px;left:50%;transform:translateX(-50%);pointer-events:none;width:260px;height:80px;}
-
-/* player controls */
-.controls{display:flex;gap:10px;align-items:center;margin-top:6px}
-.play-btn{background:linear-gradient(180deg,#ff9fb1,#ff6a88);border:0;color:#fff;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700;box-shadow:0 8px 24px rgba(199,43,86,0.14)}
-.hint{font-size:12px;color:var(--muted);margin-left:6px}
-
-/* main card (envelope + letter) */
+/* Letter Card */
 .card{
-  width:100%;
-  background:var(--card);
-  border-radius:14px;
-  padding:18px;
-  box-shadow:0 16px 48px rgba(0,0,0,0.06);
-  display:flex;
-  gap:16px;
-  align-items:flex-start;
-  flex-direction:column;
+ background:var(--card);padding:18px;border-radius:14px;
+ width:100%;display:none;flex-direction:column;gap:10px;
+ box-shadow:0 8px 28px rgba(0,0,0,.1)
 }
-
-/* envelope visual: click to open */
 .envelope{
-  width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;
-  position:relative;
+ cursor:pointer;text-align:center;padding:16px;
+ border-radius:10px;background:linear-gradient(#fff,#ffeaf5);
+ box-shadow:0 8px 24px rgba(0,0,0,.06);
+ font-size:15px;
 }
-.envelope-box{
-  width:85%;max-width:480px;height:220px;border-radius:12px;background:linear-gradient(180deg,#fff,#fff6f9);
-  box-shadow:0 8px 30px rgba(0,0,0,0.06);position:relative;overflow:hidden;border:1px solid rgba(0,0,0,0.04);
-  transform-origin:top center;
-  transition:transform .6s cubic-bezier(.2,.9,.3,1);
-}
-.envelope-flap{
-  position:absolute;left:0;right:0;top:0;height:90px;background:linear-gradient(180deg,#ffdfe8,#ffcbe0);
-  clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top center;transition:transform .7s cubic-bezier(.2,.9,.3,1);
-  box-shadow:0 8px 18px rgba(0,0,0,0.06);
-}
-.envelope.open .envelope-flap{transform:rotateX(180deg) translateY(-10px)}
-.envelope.open .envelope-box{transform:translateY(-40px)}
-
-/* letter content hidden until opening */
 .letter{
-  opacity:0;transform:translateY(12px);transition:all .6s ease;
-  padding:18px;color:#3a232a;
+ opacity:0;transition:.7s;margin-top:10px;
 }
-.envelope.open .letter{opacity:1;transform:translateY(0)}
-.letter h2{font-family:'Great Vibes',cursive;color:var(--accent);font-size:22px;margin-bottom:8px;text-align:center}
-.letter p{font-size:15px;line-height:1.6;color:#3a232a;margin:8px 0}
-
-/* teddy image */
-.teddy{display:block;margin:8px auto 4px;width:120px;height:120px;border-radius:12px;object-fit:cover;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
-
-/* sparkles small */
-.sparkle{
-  position:absolute;width:8px;height:8px;border-radius:50%;background:linear-gradient(90deg,#fff,#ffd6e8);
-  box-shadow:0 6px 18px rgba(255,200,230,0.9);
-  opacity:0;transform:scale(.2);
+.letter.show{opacity:1}
+.letter h2{
+ font-family:"Great Vibes";font-size:26px;color:var(--accent);
 }
+.letter p{font-size:15px;line-height:1.6;margin:8px 0;color:#333}
 
-/* stars canvas */
-#starsCanvas{position:fixed;inset:0;pointer-events:none;z-index:30}
-
-/* hearts celebration */
-.hearts{position:fixed;inset:0;pointer-events:none;z-index:25}
-.hearts .heart{position:absolute;font-size:20px;animation:rise 4s linear forwards}
-@keyframes rise{0%{transform:translateY(100vh) scale(.6);opacity:1}100%{transform:translateY(-10vh) scale(1.2);opacity:0}}
-
-/* responsive */
-@media (max-width:540px){
-  .flower-wrap{width:160px;height:180px}
-  .hero-text{font-size:22px}
-  .envelope-box{height:200px}
-  .letter p{font-size:14px}
+/* 💞 Heart Photo */
+.photo-heart {
+ width: 130px;
+ height: 130px;
+ margin: 0 auto 10px;
+ clip-path: polygon(50% 0%, 61% 14%, 75% 22%, 85% 35%, 88% 50%, 85% 63%, 75% 77%, 61% 86%, 50% 100%, 39% 86%, 25% 77%, 15% 63%, 12% 50%, 15% 35%, 25% 22%, 39% 14%);
+ border-radius: 10px;
+ overflow: hidden;
+ box-shadow: 0 8px 20px rgba(255, 120, 150, 0.25);
+ animation: popHeart 1.2s ease forwards;
+ opacity: 0;
+ transform: scale(.6);
+}
+.photo-heart img{
+ width:100%;height:100%;object-fit:cover;
+}
+@keyframes popHeart{
+ 0%{transform:scale(.4);opacity:0}
+ 70%{transform:scale(1.15);opacity:1}
+ 100%{transform:scale(1)}
 }
 </style>
 </head>
+
 <body>
 
-<!-- Audio (drop song.mp3 next to file or change src) -->
+<!-- Audio -->
 <audio id="bgAudio" preload="auto" loop>
-  <source src="song.mp3" type="audio/mpeg">
-  Your browser does not support audio.
+ <source src="song.mp3" type="audio/mpeg">
 </audio>
-
-<!-- optional canvas for shooting stars -->
-<canvas id="starsCanvas"></canvas>
-
-<div class="hearts" id="hearts"></div>
 
 <div class="container">
 
-  <!-- INTRO: flower bloom -->
-  <section class="intro" id="intro">
-    <div class="flower-wrap" aria-hidden="true">
-      <svg id="flower" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="petalGrad" x1="0" x2="1">
-            <stop offset="0" stop-color="#ffd1e0"/>
-            <stop offset="1" stop-color="#ff80ab"/>
-          </linearGradient>
-          <linearGradient id="leafGrad" x1="0" x2="1">
-            <stop offset="0" stop-color="#b2f0c8"/>
-            <stop offset="1" stop-color="#66d18f"/>
-          </linearGradient>
-        </defs>
+ <!-- 🌸 Intro -->
+ <section class="intro">
+  <div class="flower-wrap" id="flowerArea">🌸 Blooming... 🌸</div>
 
-        <!-- stem path -->
-        <path class="stem" d="M100 220 C98 160, 110 120, 100 80" stroke-linecap="round"/>
+  <div style="font-family:'Great Vibes';font-size:26px;color:#b83968;margin-top:8px">
+   So many flowers but my favourite one is you 😊
+  </div>
 
-        <!-- leaves -->
-        <path class="leaf left" d="M96 150 C60 140, 75 170, 96 162" fill="url(#leafGrad)"/>
-        <path class="leaf right" d="M104 130 C140 120, 125 150, 104 142" fill="url(#leafGrad)"/>
+  <button id="playBtn" class="play-btn">▶ Play Song</button>
+ </section>
 
-        <!-- petals: drawn as circles but styled with gradient and transform -->
-        <g class="petals">
-          <ellipse class="petal" cx="100" cy="62" rx="14" ry="20" fill="url(#petalGrad)"/>
-          <ellipse class="petal" cx="118" cy="82" rx="14" ry="20" fill="url(#petalGrad)"/>
-          <ellipse class="petal" cx="82" cy="82" rx="14" ry="20" fill="url(#petalGrad)"/>
-          <ellipse class="petal" cx="100" cy="96" rx="14" ry="20" fill="url(#petalGrad)"/>
-        </g>
+ <!-- 💌 Letter -->
+ <section class="card" id="letterCard">
+  <div class="envelope" id="openLetter">💌 Tap to open your special letter</div>
 
-        <!-- center -->
-        <circle class="center" cx="100" cy="80" r="8" fill="#ffd93d" />
-      </svg>
+  <div class="letter" id="letterBox">
+
+    <div class="photo-heart">
+      <img src="her.jpg" alt="her photo">
     </div>
 
-    <!-- sparkles overlay -->
-    <div class="sparkles" id="sparkles" aria-hidden="true"></div>
+    <h2>My Love,</h2>
 
-    <div class="hero-text">So many flowers but my favourite one is you hehe 😊</div>
+    <p id="t1"></p>
+    <p id="t2"></p>
+    <p id="t3"></p>
 
-    <div class="controls">
-      <button id="playBtn" class="play-btn">▶ Play song</button>
-      <div class="hint">Tap to allow music on phone</div>
-    </div>
-  </section>
-
-  <!-- Main card: envelope + letter -->
-  <section class="card" id="mainCard" aria-hidden="true" style="display:none;">
-    <div style="text-align:center;margin-bottom:6px;color:var(--muted);font-size:14px">Tap the envelope to open</div>
-
-    <div class="envelope" id="envelopeRoot" role="button" aria-pressed="false" tabindex="0">
-      <div class="envelope-flap"></div>
-      <div class="envelope-box"></div>
-
-      <!-- letter (revealed after open) -->
-      <div class="letter" id="letter">
-        <h2>A Special Letter For You</h2>
-        <img class="teddy" src="https://i.imgur.com/4AiXzf8.png" alt="teddy image">
-        <p>My Dearest,</p>
-        <p>Like these beautiful flowers that bloom with time and care, our connection grows more beautiful each day. You bring color to my world just like these vibrant petals bring life to the garden.</p>
-        <p>Every moment with you is like watching a flower bloom — magical, precious, and filled with wonder. Thank you for being the sunshine in my life.</p>
-        <p>Forever yours,<br><strong>[Your Name]</strong></p>
-      </div>
-    </div>
-  </section>
-
-  <footer style="color:var(--muted);font-size:13px;text-align:center">Made with care ✨</footer>
+    <p style="margin-top:14px;">
+     Forever yours,<br>
+     <strong>Yash</strong>
+    </p>
+  </div>
+ </section>
 </div>
 
 <script>
-/* ---------- FLOWER ANIMATION SEQUENCE ---------- */
-const flower = document.getElementById('flower');
-const stem = flower.querySelector('.stem');
-const leftLeaf = flower.querySelector('.leaf.left');
-const rightLeaf = flower.querySelector('.leaf.right');
-const petals = flower.querySelectorAll('.petal');
-const center = flower.querySelector('.center');
-const intro = document.getElementById('intro');
-const mainCard = document.getElementById('mainCard');
-const sparklesContainer = document.getElementById('sparkles');
-const playBtn = document.getElementById('playBtn');
-const bgAudio = document.getElementById('bgAudio');
-const envelopeRoot = document.getElementById('envelopeRoot');
-const letter = document.getElementById('letter');
-const heartsContainer = document.getElementById('hearts');
-const starsCanvas = document.getElementById('starsCanvas');
+const audio=document.getElementById("bgAudio");
+const playBtn=document.getElementById("playBtn");
 
-/* helper: animate bloom sequence */
-function startFlowerSequence(){
-  // draw stem
-  stem.classList.add('grow-stem');
+playBtn.onclick=async()=>{
+ if(audio.paused){
+  try{await audio.play();playBtn.textContent="⏸ Pause"}catch{}
+ } else {audio.pause();playBtn.textContent="▶ Play Song";}
+};
 
-  // after stem drawn, show leaves and petals sequentially
-  setTimeout(()=> {
-    leftLeaf.classList.add('leaf-grow');
-    rightLeaf.classList.add('leaf-grow');
-  }, 2200);
+setTimeout(()=>document.getElementById("flowerArea").innerHTML="🌸 Flower bloomed beautifully 🌸",2000);
+setTimeout(()=>document.getElementById("letterCard").style.display="flex",2600);
 
-  // petals bloom staggered
-  petals.forEach((p, i) => {
-    setTimeout(()=> p.classList.add('petal-bloom'), 2600 + i*180);
-  });
+const openLetter=document.getElementById("openLetter");
+const box=document.getElementById("letterBox");
 
-  // center
-  setTimeout(()=> center.classList.add('center-bloom'), 3200);
-
-  // sparkles start slightly earlier
-  setTimeout(()=> spawnSparkles(12), 2600);
-
-  // reveal mainCard after animation completes
-  setTimeout(()=> {
-    mainCard.style.display = 'block';
-    mainCard.setAttribute('aria-hidden','false');
-    // scroll to main card smoothly on small screens
-    mainCard.scrollIntoView({behavior:'smooth', block:'center'});
-  }, 4200);
+function type(id,text,delay){
+ let el=document.getElementById(id),i=0;
+ setTimeout(()=>{
+  let t=setInterval(()=>{el.textContent+=text[i]||"";i++;if(i>=text.length)clearInterval(t)},35)
+ },delay);
 }
 
-/* ---------- SPARKLES (small decorative dots) ---------- */
-function spawnSparkles(count=8){
-  for(let i=0;i<count;i++){
-    const s = document.createElement('div');
-    s.className = 'sparkle';
-    const left = 50 + (Math.random()-0.5)*160; // relative to sparkles container
-    const top = 20 + Math.random()*60;
-    s.style.left = left + 'px';
-    s.style.top = top + 'px';
-    s.style.opacity = 0;
-    sparklesContainer.appendChild(s);
-    // animate using css transitions
-    setTimeout(()=> {
-      s.style.transition = 'all 900ms cubic-bezier(.2,.9,.3,1)';
-      s.style.opacity = 1;
-      s.style.transform = 'scale(1.2)';
-      s.style.left = (left + (Math.random()-0.5)*40) + 'px';
-      s.style.top = (top - 20 - Math.random()*30) + 'px';
-    }, 50 + i*60);
-    // fade out & remove
-    setTimeout(()=> {
-      s.style.opacity = 0;
-      setTimeout(()=> s.remove(), 800);
-    }, 1500 + i*100);
-  }
-}
+openLetter.onclick=()=>{
+ box.classList.add("show");
 
-/* ---------- AUDIO PLAY/PAUSE ---------- */
-let playing = false;
-playBtn.addEventListener('click', async () => {
-  if (bgAudio.paused){
-    try{ await bgAudio.play(); playing=true; playBtn.textContent='⏸ Pause song'; }
-    catch(e){ console.warn('play blocked', e); }
-  } else {
-    bgAudio.pause(); playing=false; playBtn.textContent='▶ Play song';
-  }
-});
+ type("t1","I know I hurt you, and I'm truly sorry. I never wanted to be the reason you felt sadness — you deserve every bit of peace and happiness in this world.",400);
 
-/* ---------- ENVELOPE OPENING & CELEBRATION ---------- */
-function openEnvelope(){
-  if (envelopeRoot.classList.contains('open')) return;
-  envelopeRoot.classList.add('open');
-  envelopeRoot.setAttribute('aria-pressed','true');
-  // reveal letter (CSS handles fade)
-  // spawn hearts and stars
-  spawnHearts(20);
-  triggerStars(8000);
-  // if audio not playing, play (user already tapped play ideally)
-  if (bgAudio.paused){
-    bgAudio.play().catch(()=>{});
-    playBtn.textContent = '⏸ Pause song';
-  }
-}
-// attach click and keyboard for accessibility
-envelopeRoot.addEventListener('click', openEnvelope);
-envelopeRoot.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') openEnvelope(); });
+ type("t2","You are important to me. Your presence, your smile, your energy — they mean more than my mistakes, my ego, or any moment of anger ever could.",2600);
 
-/* hearts floating for celebration */
-function spawnHearts(count=12){
-  for(let i=0;i<count;i++) {
-    const el = document.createElement('div');
-    el.className='heart';
-    el.innerText='❤️';
-    el.style.left = (5 + Math.random()*90) + 'vw';
-    el.style.fontSize = (14 + Math.random()*26) + 'px';
-    el.style.animationDuration = (3 + Math.random()*2) + 's';
-    heartsContainer.appendChild(el);
-    setTimeout(()=> el.remove(), 5200);
-  }
-}
-
-/* ---------- SHOOTING STARS (canvas) ---------- */
-const ctx = starsCanvas.getContext && starsCanvas.getContext('2d');
-let starsRunning = false;
-function resizeCanvas(){
-  starsCanvas.width = innerWidth * devicePixelRatio;
-  starsCanvas.height = innerHeight * devicePixelRatio;
-  starsCanvas.style.width = innerWidth + 'px';
-  starsCanvas.style.height = innerHeight + 'px';
-  if (ctx) ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-function triggerStars(duration=5000){
-  if (!ctx) return;
-  if (starsRunning) return;
-  starsRunning = true;
-  const particles = [];
-  const spawnCount = 28;
-  for(let i=0;i<spawnCount;i++){
-    particles.push({
-      x: Math.random()*innerWidth,
-      y: -20 - Math.random()*200,
-      vx: -1 + Math.random()*2,
-      vy: 2 + Math.random()*4,
-      life: 1,
-      size: 1 + Math.random()*2,
-      alpha: 1
-    });
-  }
-  const start = Date.now();
-  function frame(){
-    const now = Date.now();
-    const t = now - start;
-    ctx.clearRect(0,0,innerWidth,innerHeight);
-    particles.forEach((p, idx) => {
-      p.x += p.vx * (1 + Math.random()*0.6);
-      p.y += p.vy * (1 + Math.random()*0.6);
-      p.alpha -= 0.01 + Math.random()*0.01;
-      if (p.alpha <= 0) p.alpha = 0;
-      ctx.save();
-      ctx.globalAlpha = p.alpha;
-      ctx.fillStyle = 'rgba(255, 245, 200, 1)';
-      ctx.beginPath();
-      ctx.ellipse(p.x, p.y, p.size, p.size*0.6, Math.PI/5, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
-    });
-    if (t < duration){
-      requestAnimationFrame(frame);
-    } else {
-      ctx.clearRect(0,0,innerWidth,innerHeight);
-      starsRunning = false;
-    }
-  }
-  frame();
-}
-
-/* ---------- Page start ---------- */
-startFlowerSequence();
-
-/* Accessibility: allow initial keyboard play of audio via space */
-document.addEventListener('keydown', (e)=>{
-  if ((e.key === ' ' || e.key === 'Enter') && document.activeElement === playBtn){
-    e.preventDefault();
-    playBtn.click();
-  }
-});
-
-/* Small UX: when flower sequence is done, focus playBtn on small screens */
-setTimeout(()=> {
-  if (window.innerWidth < 520) playBtn.focus();
-}, 4200);
-
+ type("t3","I am learning, growing, and becoming better — for us. Thank you for being patient even when I made it hard. I love you, and I never want to lose you.",5000);
+};
 </script>
+
 </body>
 </html>
