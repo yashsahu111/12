@@ -67,7 +67,6 @@
       scroll-behavior: smooth;
       background-image: radial-gradient(circle at top left, #ffe0eb 0%, transparent 40%), 
                         radial-gradient(circle at bottom right, #ffd6e0 0%, transparent 40%);
-      background-blend-mode: soft-light;
       border: 3px solid #ffd6e0;
     }
 
@@ -76,73 +75,60 @@
       transform: translateY(0);
     }
 
-    .photo-section {
+    #openPhotos {
       display: none;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 30px;
-      opacity: 0;
-      transform: translateY(40px);
+      animation: fadeIn 1s ease forwards;
     }
 
-    .photo-section.show {
-      display: flex;
-      animation: slideUp 1s ease forwards;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .photo-gallery {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
+    .popup {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
       justify-content: center;
-      margin-top: 20px;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      color: #fff;
+      padding: 20px;
+      animation: popUp 0.5s ease;
     }
 
-    .photo-gallery img {
+    @keyframes popUp {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .popup p {
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+      color: #ffb6c1;
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(255, 192, 203, 0.6);
+    }
+
+    .popup img {
       width: 120px;
       height: 160px;
       object-fit: cover;
       border-radius: 15px;
       border: 4px solid #ffb6c1;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      cursor: pointer;
+      margin: 10px;
+      box-shadow: 0 0 20px rgba(255, 182, 193, 0.8);
       transition: transform 0.3s ease;
     }
 
-    .photo-gallery img:hover {
+    .popup img:hover {
       transform: scale(1.05);
-    }
-
-    .lightbox {
-      display: none;
-      position: fixed;
-      z-index: 999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .lightbox img {
-      max-width: 90%;
-      max-height: 80%;
-      border-radius: 20px;
-      border: 6px solid #ffb6c1;
-      box-shadow: 0 0 20px rgba(255, 192, 203, 0.5);
-      animation: popIn 0.5s ease;
-    }
-
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
     }
 
     footer {
@@ -155,13 +141,7 @@
     @media (max-width: 600px) {
       h1 { font-size: 1.6rem; }
       button { padding: 10px 20px; font-size: 0.9rem; }
-      .photo-gallery img { width: 100px; height: 130px; }
-    }
-
-    /* Fade-in animation for the Surprise button */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
+      .popup img { width: 100px; height: 130px; }
     }
   </style>
 </head>
@@ -200,20 +180,14 @@
     <source src="song.mp3" type="audio/mpeg">
   </audio>
 
-  <button id="openPhotos" style="display:none;">Surprise!! 🎁</button>
+  <button id="openPhotos">Surprise!! 🎁</button>
 
-  <div class="photo-section" id="photoSection">
-    <p style="color:#ff4f8b;font-weight:600;margin-bottom:10px;">
-      Dekho photo kesi bhi ho ji, hu to me smart 😎
-    </p>
-    <div class="photo-gallery">
-      <img src="photo1.jpg" alt="Photo 1" class="popup-img">
-      <img src="photo2.jpg" alt="Photo 2" class="popup-img">
+  <div class="popup" id="photoPopup">
+    <p>Dekho photo kesi bhi ho ji, hu to me smart 😎</p>
+    <div>
+      <img src="photo1.jpg" alt="Photo 1">
+      <img src="photo2.jpg" alt="Photo 2">
     </div>
-  </div>
-
-  <div class="lightbox" id="lightbox">
-    <img src="" alt="Expanded Photo" id="lightboxImg">
   </div>
 
   <footer>Made with 💕 for someone truly special.</footer>
@@ -223,13 +197,10 @@
     const letter = document.getElementById('letter');
     const audio = document.getElementById('audioPlayer');
     const openPhotosBtn = document.getElementById('openPhotos');
-    const photoSection = document.getElementById('photoSection');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightboxImg');
+    const popup = document.getElementById('photoPopup');
 
     let letterOpened = false;
     let surpriseShown = false;
-    let endReachedTime = null;
 
     openLetterBtn.addEventListener('click', () => {
       const show = !letter.classList.contains('show');
@@ -248,44 +219,28 @@
       }
     });
 
-    // Show Surprise button only when letter is open, scrolled fully, and stayed at bottom a bit
+    // show Surprise only when letter is open and scrolled to the end (once)
     letter.addEventListener('scroll', () => {
       if (!letterOpened || surpriseShown) return;
-      const nearBottom = letter.scrollTop + letter.clientHeight >= letter.scrollHeight - 5;
-      if (nearBottom && !endReachedTime) {
-        endReachedTime = Date.now();
+      const scrolledToBottom = Math.ceil(letter.scrollTop + letter.clientHeight) >= letter.scrollHeight;
+      if (scrolledToBottom) {
+        surpriseShown = true;
         setTimeout(() => {
-          if (letterOpened && Date.now() - endReachedTime >= 2000) {
+          if (letterOpened) {
             openPhotosBtn.style.display = 'block';
-            openPhotosBtn.style.animation = 'fadeIn 1s ease';
-            surpriseShown = true;
           }
-        }, 2000);
+        }, 1500);
       }
     });
 
+    // popup with photos
     openPhotosBtn.addEventListener('click', () => {
-      const visible = photoSection.classList.contains('show');
-      if (visible) {
-        photoSection.classList.remove('show');
-        setTimeout(() => photoSection.style.display = 'none', 500);
-        openPhotosBtn.textContent = 'Surprise!! 🎁';
-      } else {
-        photoSection.style.display = 'flex';
-        setTimeout(() => photoSection.classList.add('show'), 100);
-        openPhotosBtn.textContent = 'Hide Surprise 🎁';
-      }
+      popup.style.display = 'flex';
     });
 
-    document.querySelectorAll('.popup-img').forEach(photo => {
-      photo.addEventListener('click', () => {
-        lightboxImg.src = photo.src;
-        lightbox.style.display = 'flex';
-      });
-    });
-
-    lightbox.addEventListener('click', () => {
-      lightbox.style.display = 'none';
+    // click outside popup to close
+    popup.addEventListener('click', () => {
+      popup.style.display = 'none';
     });
   </script>
 </body>
