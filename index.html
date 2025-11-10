@@ -77,24 +77,35 @@
 
     .letter {
       width: 90%;
-      max-width: 400px;
+      max-width: 420px;
       margin-top: 20px;
       background: white;
       border-radius: 20px;
       padding: 20px;
-      line-height: 1.6;
+      line-height: 1.7;
+      font-size: 1.05rem;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
       opacity: 0;
       transform: translateY(20px);
-      transition: all 0.5s ease;
+      transition: all 1s ease;
+      height: 400px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
     }
 
     .letter.show {
       opacity: 1;
       transform: translateY(0);
+      animation: scrollLetter 180s linear forwards;
+    }
+
+    @keyframes scrollLetter {
+      from { scrollTop: 0; }
+      to { scrollTop: 100%; }
     }
 
     .music {
+      display: none;
       margin-top: 30px;
     }
 
@@ -127,6 +138,7 @@
       border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border: 5px solid #ffb6c1;
     }
 
     .flip-card-front img, .flip-card-back img {
@@ -178,20 +190,29 @@
     <p>
       Dear [Name],  
       <br><br>
-      Some people walk into our lives quietly, but they leave behind warmth that never fades.  
-      You’re one of those people — someone whose smile, kindness, and presence turn ordinary days into something truly beautiful.  
+      Life has a gentle way of bringing people together, often when we least expect it.  
+      Sometimes it’s a quiet hello, other times it’s a spark — and then suddenly, someone becomes impossible to forget.  
       <br><br>
-      This page is just a small way to remind you how special you are and how much light you bring to those around you.  
+      You have that magic.  
+      The way you smile, the warmth you carry, the peace you bring — it all makes the world softer.  
       <br><br>
-      With all my heart,  
+      This little page is a small reflection of how special you are.  
+      Every color, every sound, every tiny animation here carries a whisper of affection.  
+      <br><br>
+      As this song plays, let it wrap around you like a gentle hug.  
+      Close your eyes for a moment, breathe, and remember: you are deeply cherished, more than words can tell.  
+      <br><br>
+      Forever wishing you calm sunsets, happy mornings, and endless laughter.  
+      <br><br>
+      With love,  
       <br>
       💖 Yours Always 💖
     </p>
   </div>
 
   <!-- Music Player -->
-  <div class="music">
-    <audio controls autoplay loop>
+  <div class="music" id="music">
+    <audio id="audioPlayer" controls>
       <source src="song.mp3" type="audio/mpeg">
       Your browser does not support the audio element.
     </audio>
@@ -216,12 +237,22 @@
   <script>
     const openLetterBtn = document.getElementById('openLetter');
     const letter = document.getElementById('letter');
+    const music = document.getElementById('music');
+    const audio = document.getElementById('audioPlayer');
 
     openLetterBtn.addEventListener('click', () => {
-      letter.classList.toggle('show');
-      openLetterBtn.textContent = letter.classList.contains('show') 
-        ? 'Close Letter 💌' 
-        : 'Open Letter 💌';
+      const show = !letter.classList.contains('show');
+      letter.classList.toggle('show', show);
+
+      if (show) {
+        music.style.display = 'block';
+        audio.play();
+        openLetterBtn.textContent = 'Close Letter 💌';
+      } else {
+        music.style.display = 'none';
+        audio.pause();
+        openLetterBtn.textContent = 'Open Letter 💌';
+      }
     });
   </script>
 </body>
