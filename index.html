@@ -74,12 +74,6 @@
     .letter.show {
       opacity: 1;
       transform: translateY(0);
-      animation: scrollLetter 180s linear forwards;
-    }
-
-    @keyframes scrollLetter {
-      from { scrollTop: 0; }
-      to { scrollTop: 100%; }
     }
 
     .photo-section {
@@ -107,7 +101,6 @@
       flex-wrap: wrap;
       justify-content: center;
       margin-top: 20px;
-      position: relative;
     }
 
     .photo-gallery img {
@@ -163,6 +156,12 @@
       h1 { font-size: 1.6rem; }
       button { padding: 10px 20px; font-size: 0.9rem; }
       .photo-gallery img { width: 100px; height: 130px; }
+    }
+
+    /* Fade-in animation for the Surprise button */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
@@ -228,24 +227,40 @@
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightboxImg');
 
+    let letterOpened = false;
+    let surpriseShown = false;
+    let endReachedTime = null;
+
     openLetterBtn.addEventListener('click', () => {
       const show = !letter.classList.contains('show');
       letter.classList.toggle('show', show);
 
       if (show) {
+        letterOpened = true;
         audio.play();
         openLetterBtn.textContent = 'Close Letter 💌';
       } else {
+        letterOpened = false;
         audio.pause();
         openLetterBtn.textContent = 'Open Letter 💌';
+        openPhotosBtn.style.display = 'none';
+        surpriseShown = false;
       }
     });
 
-    // Show "Surprise" button only when scrolled to end
+    // Show Surprise button only when letter is open, scrolled fully, and stayed at bottom a bit
     letter.addEventListener('scroll', () => {
-      const nearBottom = letter.scrollTop + letter.clientHeight >= letter.scrollHeight - 20;
-      if (nearBottom) {
-        openPhotosBtn.style.display = 'block';
+      if (!letterOpened || surpriseShown) return;
+      const nearBottom = letter.scrollTop + letter.clientHeight >= letter.scrollHeight - 5;
+      if (nearBottom && !endReachedTime) {
+        endReachedTime = Date.now();
+        setTimeout(() => {
+          if (letterOpened && Date.now() - endReachedTime >= 2000) {
+            openPhotosBtn.style.display = 'block';
+            openPhotosBtn.style.animation = 'fadeIn 1s ease';
+            surpriseShown = true;
+          }
+        }, 2000);
       }
     });
 
