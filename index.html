@@ -104,51 +104,58 @@
       to { scrollTop: 100%; }
     }
 
-    .music {
-      display: none;
-      margin-top: 30px;
-    }
-
-    .flip-card {
-      background-color: transparent;
-      width: 250px;
-      height: 350px;
-      perspective: 1000px;
+    .photo-gallery {
+      display: flex;
+      gap: 20px;
       margin-top: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
-    .flip-card-inner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      text-align: center;
-      transition: transform 0.8s;
-      transform-style: preserve-3d;
-    }
-
-    .flip-card:hover .flip-card-inner {
-      transform: rotateY(180deg);
-    }
-
-    .flip-card-front, .flip-card-back {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      backface-visibility: hidden;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-      border: 5px solid #ffb6c1;
-    }
-
-    .flip-card-front img, .flip-card-back img {
-      width: 100%;
-      height: 100%;
+    .photo-gallery img {
+      width: 120px;
+      height: 160px;
       object-fit: cover;
+      border-radius: 15px;
+      border: 4px solid #ffb6c1;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: transform 0.3s ease;
     }
 
-    .flip-card-back {
-      transform: rotateY(180deg);
+    .photo-gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 20px;
+      border: 6px solid #ffb6c1;
+      box-shadow: 0 0 20px rgba(255, 192, 203, 0.5);
+      animation: popIn 0.5s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .lightbox:active {
+      display: none;
     }
 
     footer {
@@ -159,13 +166,9 @@
     }
 
     @media (max-width: 600px) {
-      h1 {
-        font-size: 1.6rem;
-      }
-      button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-      }
+      h1 { font-size: 1.6rem; }
+      button { padding: 10px 20px; font-size: 0.9rem; }
+      .photo-gallery img { width: 100px; height: 130px; }
     }
   </style>
 </head>
@@ -190,44 +193,33 @@
     <p>
       Dear [Name],  
       <br><br>
-      Life has a gentle way of bringing people together, often when we least expect it.  
-      Sometimes it’s a quiet hello, other times it’s a spark — and then suddenly, someone becomes impossible to forget.  
+      Sometimes the universe brings someone into your life not by chance, but by quiet design.  
+      Someone whose presence feels like home — soft, calm, and endlessly comforting.  
       <br><br>
-      You have that magic.  
-      The way you smile, the warmth you carry, the peace you bring — it all makes the world softer.  
+      You’ve become that rare kind of light that doesn’t blind, but warms everything it touches.  
       <br><br>
-      This little page is a small reflection of how special you are.  
-      Every color, every sound, every tiny animation here carries a whisper of affection.  
+      As this song plays, let your heart slow down. Feel the rhythm, the peace, and remember — you are deeply loved, endlessly valued, and truly unforgettable.  
       <br><br>
-      As this song plays, let it wrap around you like a gentle hug.  
-      Close your eyes for a moment, breathe, and remember: you are deeply cherished, more than words can tell.  
-      <br><br>
-      Forever wishing you calm sunsets, happy mornings, and endless laughter.  
-      <br><br>
-      With love,  
+      With love, always,  
       <br>
-      💖 Yours Always 💖
+      💖 Yours 💖
     </p>
   </div>
 
-  <!-- Music Player -->
-  <div class="music" id="music">
-    <audio id="audioPlayer" controls>
-      <source src="song.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
-    </audio>
+  <!-- Hidden Music -->
+  <audio id="audioPlayer">
+    <source src="song.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Photo Gallery -->
+  <div class="photo-gallery">
+    <img src="photo1.jpg" alt="Photo 1" class="popup-img">
+    <img src="photo2.jpg" alt="Photo 2" class="popup-img">
   </div>
 
-  <!-- Flip Photo Section -->
-  <div class="flip-card">
-    <div class="flip-card-inner">
-      <div class="flip-card-front">
-        <img src="photo1.jpg" alt="Front Photo">
-      </div>
-      <div class="flip-card-back">
-        <img src="photo2.jpg" alt="Back Photo">
-      </div>
-    </div>
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <img src="" alt="Expanded Photo" id="lightboxImg">
   </div>
 
   <footer>
@@ -237,7 +229,6 @@
   <script>
     const openLetterBtn = document.getElementById('openLetter');
     const letter = document.getElementById('letter');
-    const music = document.getElementById('music');
     const audio = document.getElementById('audioPlayer');
 
     openLetterBtn.addEventListener('click', () => {
@@ -245,14 +236,28 @@
       letter.classList.toggle('show', show);
 
       if (show) {
-        music.style.display = 'block';
         audio.play();
         openLetterBtn.textContent = 'Close Letter 💌';
       } else {
-        music.style.display = 'none';
         audio.pause();
         openLetterBtn.textContent = 'Open Letter 💌';
       }
+    });
+
+    // Lightbox functionality
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const photos = document.querySelectorAll('.popup-img');
+
+    photos.forEach(photo => {
+      photo.addEventListener('click', () => {
+        lightboxImg.src = photo.src;
+        lightbox.style.display = 'flex';
+      });
+    });
+
+    lightbox.addEventListener('click', () => {
+      lightbox.style.display = 'none';
     });
   </script>
 </body>
