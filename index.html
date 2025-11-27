@@ -2,168 +2,182 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>My Virtual Diary</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Virtual Diary 📘</title>
+
+<!-- TURN.JS for Realistic Page Flip -->
+<script src="https://cdn.jsdelivr.net/npm/turn.js@4/turn.min.js"></script>
 
 <style>
     body {
         margin: 0;
         padding: 0;
-        background: #f5e9d5;
+        background: #f7e9d7;
         font-family: 'Georgia', serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        overflow: hidden;
+        overflow-x: hidden;
     }
 
-    .book {
-        width: 90%;
-        max-width: 500px;
-        height: 75vh;
-        background: #fff8ec;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-        border-radius: 15px;
-        position: relative;
-        transform-style: preserve-3d;
-        transition: 1s;
+    #diary {
+        width: 90vw;
+        height: 80vh;
+        margin: 20px auto;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+
+    .page {
+        background: #fffdf5;
         padding: 20px;
+        position: relative;
+        overflow-y: auto;
     }
 
-    .book.closed {
-        transform: rotateY(-90deg);
-    }
-
-    h2 {
-        text-align: center;
-        margin-top: 0;
-        font-size: 1.4rem;
-        color: #7b4b17;
-    }
-
-    .date-box {
-        text-align: center;
-        font-size: 1.1rem;
+    .date-area {
+        font-size: 18px;
+        font-weight: bold;
         margin-bottom: 10px;
-        color: #5a3811;
     }
 
-    textarea {
+    .text-entry {
         width: 100%;
-        height: 70%;
+        min-height: 200px;
         border: none;
-        padding: 10px;
-        font-size: 1rem;
+        outline: none;
+        font-size: 16px;
         background: transparent;
         resize: none;
-        outline: none;
-        color: #4b2c12;
-        line-height: 1.5;
     }
 
-    .controls {
-        display: flex;
-        justify-content: space-between;
+    .photo-container img {
+        width: 80%;
         margin-top: 10px;
+        border-radius: 8px;
+        border: 2px solid #c89f65;
+        display: block;
     }
 
-    button {
-        background: #c28c4b;
-        border: none;
-        padding: 8px 18px;
+    .add-photo-btn {
+        background: #c58b45;
         color: white;
-        border-radius: 10px;
-        font-size: 0.9rem;
+        padding: 6px 14px;
+        border: none;
+        border-radius: 6px;
+        margin-top: 10px;
         cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        font-size: 14px;
     }
 
-    button:hover {
-        background: #d19a5f;
-    }
-
-    #openDiary {
-        position: absolute;
-        bottom: 25px;
-        font-size: 1.1rem;
+    .save-btn {
+        background: #7a4e2a;
+        color: white;
+        padding: 8px 18px;
+        border: none;
+        border-radius: 8px;
+        margin-top: 14px;
+        font-size: 16px;
+        cursor: pointer;
     }
 </style>
-</head>
 
+</head>
 <body>
 
-<button id="openDiary">Open Diary 📘</button>
+<div id="diary">
+    <div class="page" id="page1">
+        <div class="date-area" id="date1"></div>
+        <textarea class="text-entry" id="text1" placeholder="Write today's thoughts..."></textarea>
 
-<div class="book closed" id="diaryBook">
+        <div class="photo-container" id="photos1"></div>
+        <button class="add-photo-btn" onclick="addPhoto(1)">Add Photo</button>
 
-    <h2>My Diary</h2>
+        <button class="save-btn" onclick="savePage(1)">Save</button>
 
-    <div class="date-box" id="dateBox"></div>
-
-    <textarea id="entryText" placeholder="Write your thoughts here..."></textarea>
-
-    <div class="controls">
-        <button id="prevDay">◀ Previous</button>
-        <button id="nextDay">Next ▶</button>
+        <input type="file" id="fileInput1" accept="image/*" style="display:none" onchange="insertPhoto(event,1)">
     </div>
 
+    <div class="page" id="page2">
+        <div class="date-area" id="date2"></div>
+        <textarea class="text-entry" id="text2"></textarea>
+
+        <div class="photo-container" id="photos2"></div>
+        <button class="add-photo-btn" onclick="addPhoto(2)">Add Photo</button>
+
+        <button class="save-btn" onclick="savePage(2)">Save</button>
+
+        <input type="file" id="fileInput2" accept="image/*" style="display:none" onchange="insertPhoto(event,2)">
+    </div>
 </div>
 
 <script>
-    const diary = document.getElementById("diaryBook");
-    const openBtn = document.getElementById("openDiary");
-    const entry = document.getElementById("entryText");
-    const dateBox = document.getElementById("dateBox");
-
-    let currentDate = new Date();
-
-    // Format date: Monday, 5 Feb 2025
-    function formatDate(date) {
-        return date.toLocaleDateString("en-IN", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric"
+    // Initialize Flipbook
+    document.addEventListener("DOMContentLoaded", () => {
+        $("#diary").turn({
+            width: "90vw",
+            height: "80vh",
+            autoCenter: true,
+            gradients: true,
+            elevation: 30
         });
-    }
 
-    // Load saved entry from localStorage
-    function loadEntry() {
-        let key = currentDate.toDateString();
-        let saved = localStorage.getItem(key);
-        entry.value = saved || "";
-        dateBox.innerText = formatDate(currentDate);
-    }
-
-    // Save on typing
-    entry.addEventListener("input", () => {
-        let key = currentDate.toDateString();
-        localStorage.setItem(key, entry.value);
+        loadDiary();
+        applyDates();
     });
 
-    // Open / Close diary
-    openBtn.addEventListener("click", () => {
-        diary.classList.toggle("closed");
+    // Insert Photos Inside Diary Page
+    function addPhoto(page) {
+        document.getElementById("fileInput" + page).click();
+    }
 
-        if (!diary.classList.contains("closed")) {
-            openBtn.innerText = "Close Diary 📕";
-            loadEntry();
-        } else {
-            openBtn.innerText = "Open Diary 📘";
+    function insertPhoto(event, page) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            document.getElementById("photos" + page).appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Save Text & Photos to localStorage
+    function savePage(page) {
+        const text = document.getElementById("text" + page).value;
+        const photos = [...document.querySelectorAll("#photos" + page + " img")].map(img => img.src);
+
+        const data = { text, photos };
+
+        localStorage.setItem("page" + page, JSON.stringify(data));
+        alert("Page Saved!");
+    }
+
+    // Load Entries
+    function loadDiary() {
+        for (let p = 1; p <= 2; p++) {
+            const data = JSON.parse(localStorage.getItem("page" + p));
+            if (data) {
+                document.getElementById("text" + p).value = data.text;
+                const container = document.getElementById("photos" + p);
+
+                data.photos.forEach(src => {
+                    const img = document.createElement("img");
+                    img.src = src;
+                    container.appendChild(img);
+                });
+            }
         }
-    });
+    }
 
-    // Navigation buttons
-    document.getElementById("prevDay").onclick = () => {
-        currentDate.setDate(currentDate.getDate() - 1);
-        loadEntry();
-    };
+    // Apply Date on Each Page
+    function applyDates() {
+        const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        const today = new Date();
 
-    document.getElementById("nextDay").onclick = () => {
-        currentDate.setDate(currentDate.getDate() + 1);
-        loadEntry();
-    };
+        for (let p = 1; p <= 2; p++) {
+            document.getElementById("date" + p).innerHTML =
+                today.toDateString() + " — " + days[today.getDay()];
+        }
+    }
 </script>
 
 </body>
