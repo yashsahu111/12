@@ -1,69 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Diary Notebook</title>
-<style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic Digital Diary Cover</title>
+    
+    <style>
+        /* --- Basic Reset and Layout --- */
+        body {
+            background-color: #f4f4f9; /* Light background for the web page */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            /* Using a common font that looks slightly informal */
+            font-family: Arial, sans-serif; 
+            perspective: 1500px; /* Needed for the 3D book rotation effect */
+        }
 
-    body {
-        margin: 0;
-        padding: 0;
-        background: #f5e9dd;
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        min-height: 100vh;
-    }
+        .book-container {
+            position: relative;
+            width: 300px; /* Width of the diary */
+            height: 400px; /* Height of the diary */
+            transform-style: preserve-3d; /* Key for 3D effects */
+            /* Rotate it slightly for a better initial 3D view */
+            transform: rotateY(-15deg) translateZ(0); 
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5); /* Shadow for the whole book */
+        }
 
-    /* Notebook Container */
-    .notebook {
-        width: 900px;
-        height: 550px;
-        background-image: url("notebook.jpg");  /* <-- Use a LANDSCAPE notebook image */
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        gap: 20px;
-        padding: 50px;
-        margin-top: 50px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        border-radius: 8px;
-    }
+        /* --- The Diary Spine/Binding --- */
+        .diary-spine {
+            position: absolute;
+            width: 20px; /* Thickness of the spine */
+            height: 100%;
+            background-color: #333; /* Dark color for the spiral binding area */
+            top: 0;
+            left: 0;
+            z-index: 10;
+            /* Creates the spiral look using a repeating linear gradient */
+            background-image: repeating-linear-gradient(to bottom, #555, #555 2px, #333 2px, #333 5px);
+        }
 
-    /* Individual Pages */
-    .page {
-        width: 50%;
-        height: 100%;
-        background: rgba(255,255,255,0.85);
-        border-radius: 6px;
-        padding: 20px;
-        overflow-y: auto;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
-    }
+        /* --- The Front Cover Styling --- */
+        .diary-cover {
+            position: absolute;
+            width: calc(100% - 20px); /* Adjust width to account for the spine */
+            height: 100%;
+            background-color: #e8e3d6; /* The light paper background color */
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transform-origin: left center; /* Important: Pages flip from the left (the spine) */
+            transition: transform 0.8s ease-in-out; /* Smooth transition for page flip */
+            left: 20px; /* Start after the spine */
+            z-index: 20; /* Ensure the cover is on top */
+            overflow: hidden;
+            cursor: pointer; /* Suggests it's interactive */
+        }
+        
+        /* Optional: Add a simple hover effect to show it can open */
+        .diary-cover:hover {
+            transform: rotateY(-30deg); /* Open the cover slightly on hover */
+            box-shadow: -10px 5px 20px rgba(0, 0, 0, 0.3);
+        }
 
-    .page h2 {
-        margin-top: 0;
-        text-align: center;
-        font-size: 20px;
-        color: #444;
-    }
+        /* --- The Abstract Cover Design (Mimicking the image) --- */
+        .cover-design {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
 
-</style>
+        /* Abstract Shape 1: Top Left (Blue/Grey) */
+        .cover-design::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 150px;
+            height: 150px;
+            background-color: #b0c4de; /* Light blue/grey color */
+            border-radius: 50%;
+            opacity: 0.8;
+            transform: rotate(-10deg);
+        }
+
+        /* Abstract Shape 2: Middle/Bottom (Tan/Brown) */
+        .cover-design::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: 30px;
+            width: 250px;
+            height: 250px;
+            background-color: #d2b48c; /* Tan/sand color */
+            /* Creates an organic, rounded shape */
+            border-radius: 45% 55% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0.7;
+            transform: rotate(5deg);
+        }
+
+        /* Abstract Shape 3: Bottom Right (Rust/Orange) - using a child element */
+        .shape-3 { 
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            width: 150px;
+            height: 150px;
+            background-color: #cd853f; /* Rust/terracotta color */
+            border-radius: 50%;
+            opacity: 0.6;
+            transform: rotate(20deg) translate(50px, 50px);
+        }
+
+        .quote {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Using a common system font that might look slightly handwritten */
+            font-family: 'Segoe Script', 'Handlee', cursive, sans-serif; 
+            font-size: 1.2em;
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+            line-height: 1.4;
+            z-index: 30; /* Ensure text is above the shapes */
+            padding: 5px;
+            background-color: rgba(255, 255, 255, 0.5); /* Slight backing to make text pop */
+        }
+
+        /* --- The Inner Page (The paper underneath the cover) --- */
+        .diary-page {
+            position: absolute;
+            left: 20px;
+            width: calc(100% - 20px);
+            height: 100%;
+            background-color: #fffff0; /* Brighter paper color */
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 5;
+            transform-origin: left center;
+            border-left: 1px solid #ccc;
+        }
+
+        .diary-page h2 {
+            color: #4e342e;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+    </style>
 </head>
 <body>
+    <div class="book-container">
+        <div class="diary-spine"></div>
+        
+        <div class="diary-cover front-cover">
+            <div class="cover-design">
+                <div class="shape-3"></div> 
+                <p class="quote">do more of what makes you happy</p>
+            </div>
+        </div>
+        
+        <div class="diary-page first-page">
+            <h2>October 26, 2025</h2>
+            <p>Today was a great day to start this diary. The plan is to learn HTML, CSS, and JavaScript to make this book truly interactive!</p>
+            <p style="margin-top: 30px;">(This page remains visible when you hover over the cover.)</p>
+        </div>
 
-<div class="notebook">
-    <div class="page">
-        <h2>Diary Page 1</h2>
-        <p>Your diary text goes here...</p>
     </div>
-
-    <div class="page">
-        <h2>Diary Page 2</h2>
-        <p>More diary content here...</p>
-    </div>
-</div>
-
-</body>
+    
+    </body>
 </html>
