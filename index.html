@@ -3,71 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realistic Digital Diary Cover</title>
+    <title>Realistic Flipping Diary</title>
     
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/turn.min.js"></script>
+
     <style>
-        /* --- Basic Reset and Layout --- */
+        /* --- General Setup --- */
         body {
-            background-color: #f4f4f9; /* Light background for the web page */
+            background-color: #f4f4f9; 
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            /* Using a common font that looks slightly informal */
             font-family: Arial, sans-serif; 
-            perspective: 1500px; /* Needed for the 3D book rotation effect */
-        }
-
-        .book-container {
-            position: relative;
-            width: 300px; /* Width of the diary */
-            height: 400px; /* Height of the diary */
-            transform-style: preserve-3d; /* Key for 3D effects */
-            /* Rotate it slightly for a better initial 3D view */
-            transform: rotateY(-15deg) translateZ(0); 
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5); /* Shadow for the whole book */
-        }
-
-        /* --- The Diary Spine/Binding --- */
-        .diary-spine {
-            position: absolute;
-            width: 20px; /* Thickness of the spine */
-            height: 100%;
-            background-color: #333; /* Dark color for the spiral binding area */
-            top: 0;
-            left: 0;
-            z-index: 10;
-            /* Creates the spiral look using a repeating linear gradient */
-            background-image: repeating-linear-gradient(to bottom, #555, #555 2px, #333 2px, #333 5px);
-        }
-
-        /* --- The Front Cover Styling --- */
-        .diary-cover {
-            position: absolute;
-            width: calc(100% - 20px); /* Adjust width to account for the spine */
-            height: 100%;
-            background-color: #e8e3d6; /* The light paper background color */
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            transform-origin: left center; /* Important: Pages flip from the left (the spine) */
-            transition: transform 0.8s ease-in-out; /* Smooth transition for page flip */
-            left: 20px; /* Start after the spine */
-            z-index: 20; /* Ensure the cover is on top */
-            overflow: hidden;
-            cursor: pointer; /* Suggests it's interactive */
+            /* Turn.js manages 3D perspective, so we disable body's perspective */
+            perspective: none; 
         }
         
-        /* Optional: Add a simple hover effect to show it can open */
-        .diary-cover:hover {
-            transform: rotateY(-30deg); /* Open the cover slightly on hover */
-            box-shadow: -10px 5px 20px rgba(0, 0, 0, 0.3);
+        /* --- The Book Container (Controlled by Turn.js) --- */
+        #flipbook {
+            width: 600px; /* Two pages wide (2 * 300px) */
+            height: 400px; /* Page height */
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5); /* Shadow for the whole closed book */
         }
 
-        /* --- The Abstract Cover Design (Mimicking the image) --- */
+        /* --- Page Styling (Applies to all pages, including covers) --- */
+        .page {
+            /* These dimensions are set automatically by Turn.js */
+            background-color: #fffff0; /* Default inner paper color */
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            padding: 20px;
+            overflow: hidden; 
+            /* Text content styling */
+            line-height: 1.6;
+            color: #444;
+        }
+
+        /* --- COVER STYLING (The First and Last Pages) --- */
+        .cover {
+            background-color: #e8e3d6 !important; /* The light paper background color */
+            border: none; /* No visible border on the covers */
+            padding: 0; /* Remove padding from cover */
+        }
+        
+        /* --- Spine/Binding Effect (Visually aligned on the center when open) --- */
+        .spine-effect {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 20px;
+            height: 100%;
+            background-color: #333; 
+            /* Creates the spiral/binding look */
+            background-image: repeating-linear-gradient(to bottom, #555, #555 2px, #333 2px, #333 5px);
+            transform: translateX(-50%); 
+            z-index: 999; 
+            pointer-events: none;
+        }
+
+        /* --- COVER DESIGN (Matching your image) --- */
         .cover-design {
             position: relative;
             width: 100%;
             height: 100%;
+            /* Ensure shapes/text are visible over the cover background */
+            z-index: 10;
         }
 
         /* Abstract Shape 1: Top Left (Blue/Grey) */
@@ -78,7 +81,7 @@
             left: -50px;
             width: 150px;
             height: 150px;
-            background-color: #b0c4de; /* Light blue/grey color */
+            background-color: #b0c4de; 
             border-radius: 50%;
             opacity: 0.8;
             transform: rotate(-10deg);
@@ -92,24 +95,24 @@
             left: 30px;
             width: 250px;
             height: 250px;
-            background-color: #d2b48c; /* Tan/sand color */
-            /* Creates an organic, rounded shape */
+            background-color: #d2b48c; 
             border-radius: 45% 55% 50% 50% / 60% 60% 40% 40%;
             opacity: 0.7;
             transform: rotate(5deg);
         }
 
-        /* Abstract Shape 3: Bottom Right (Rust/Orange) - using a child element */
+        /* Abstract Shape 3: Bottom Right (Rust/Orange) */
         .shape-3 { 
             position: absolute;
             bottom: 0px;
             right: 0px;
             width: 150px;
             height: 150px;
-            background-color: #cd853f; /* Rust/terracotta color */
+            background-color: #cd853f; 
             border-radius: 50%;
             opacity: 0.6;
             transform: rotate(20deg) translate(50px, 50px);
+            z-index: 5;
         }
 
         .quote {
@@ -117,33 +120,19 @@
             top: 35%;
             left: 50%;
             transform: translate(-50%, -50%);
-            /* Using a common system font that might look slightly handwritten */
             font-family: 'Segoe Script', 'Handlee', cursive, sans-serif; 
             font-size: 1.2em;
             font-weight: 500;
             color: #333;
             text-align: center;
             line-height: 1.4;
-            z-index: 30; /* Ensure text is above the shapes */
+            z-index: 30; 
             padding: 5px;
-            background-color: rgba(255, 255, 255, 0.5); /* Slight backing to make text pop */
+            background-color: rgba(255, 255, 255, 0.5); 
         }
 
-        /* --- The Inner Page (The paper underneath the cover) --- */
-        .diary-page {
-            position: absolute;
-            left: 20px;
-            width: calc(100% - 20px);
-            height: 100%;
-            background-color: #fffff0; /* Brighter paper color */
-            padding: 20px;
-            box-sizing: border-box;
-            z-index: 5;
-            transform-origin: left center;
-            border-left: 1px solid #ccc;
-        }
-
-        .diary-page h2 {
+        /* --- INNER PAGE STYLING --- */
+        .page h2 {
             color: #4e342e;
             border-bottom: 1px dashed #ccc;
             padding-bottom: 10px;
@@ -152,23 +141,44 @@
     </style>
 </head>
 <body>
-    <div class="book-container">
-        <div class="diary-spine"></div>
+    <div id="flipbook">
         
-        <div class="diary-cover front-cover">
+        <div class="page cover" id="page1">
+            <div class="spine-effect"></div>
             <div class="cover-design">
                 <div class="shape-3"></div> 
                 <p class="quote">do more of what makes you happy</p>
             </div>
         </div>
         
-        <div class="diary-page first-page">
-            <h2>October 26, 2025</h2>
-            <p>Today was a great day to start this diary. The plan is to learn HTML, CSS, and JavaScript to make this book truly interactive!</p>
-            <p style="margin-top: 30px;">(This page remains visible when you hover over the cover.)</p>
+        <div class="page" id="page2">
+            <h2>Welcome Entry!</h2>
+            <p>This is the first inner page. When the book is open, this page will be on the left side. Feel free to replace this text with your first diary entry!</p>
         </div>
-
+        
+        <div class="page" id="page3">
+            <h2>October 27, 2025</h2>
+            <p>The diary is starting to look great! Click the corner of the page (bottom right of this page or bottom left of the previous page) to see the realistic flip animation.</p>
+        </div>
+        
+        <div class="page cover" id="page4" style="text-align: center;">
+            <p style="margin-top: 50%; font-size: 1.2em; color: #555;">**The Back Cover**<br>See you next time!</p>
+        </div>
+        
     </div>
-    
-    </body>
+
+    <script>
+        // Check if jQuery and Turn.js are loaded before initializing
+        if (typeof jQuery !== 'undefined' && typeof jQuery.fn.turn !== 'undefined') {
+            $("#flipbook").turn({
+                width: 600, // The total width of the two pages side-by-side
+                height: 400, // The height of the pages
+                autoCenter: true,
+                elevation: 50, // Depth effect for the 3D flip
+                gradients: true, // Adds realistic shadows
+                duration: 900 // Controls the speed of the flip (in milliseconds)
+            });
+        }
+    </script>
+</body>
 </html>
