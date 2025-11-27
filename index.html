@@ -2,114 +2,68 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Real Spiral Notebook Diary</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script>
-
+<title>Diary Notebook</title>
 <style>
-body {
-    background: #f2e7d8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    font-family: 'Georgia';
-}
 
-/* REAL NOTEBOOK FRAME */
-.notebook {
-    width: 900px;
-    height: 600px;
-    position: relative;
-    background: url('https://i.imgur.com/KW5EguR.png'); /* spiral notebook frame */
-    background-size: cover;
-    cursor: pointer;
-}
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f5e9dd;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+    }
 
-/* CLOSED COVER */
-.cover {
-    width: 420px;
-    height: 550px;
-    background: url('https://i.imgur.com/7YIcaCm.jpeg'); /* YOUR COVER */
-    background-size: cover;
-    position: absolute;
-    left: 30px;
-    top: 25px;
-    z-index: 5;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    border-radius: 6px;
-}
+    /* Notebook Container */
+    .notebook {
+        width: 900px;
+        height: 550px;
+        background-image: url("notebook.jpg");  /* <-- Use a LANDSCAPE notebook image */
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        gap: 20px;
+        padding: 50px;
+        margin-top: 50px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        border-radius: 8px;
+    }
 
-/* FLIPBOOK PAGES INSIDE NOTEBOOK */
-#book {
-    width: 420px;
-    height: 550px;
-    position: absolute;
-    left: 30px;
-    top: 25px;
-    display: none;
-}
+    /* Individual Pages */
+    .page {
+        width: 50%;
+        height: 100%;
+        background: rgba(255,255,255,0.85);
+        border-radius: 6px;
+        padding: 20px;
+        overflow-y: auto;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+    }
 
-/* Inside pages */
-.page {
-    background: #fffdf6;
-    padding: 40px;
-    font-size: 19px;
-    line-height: 28px;
-}
+    .page h2 {
+        margin-top: 0;
+        text-align: center;
+        font-size: 20px;
+        color: #444;
+    }
 
-textarea {
-    width: 100%;
-    height: 300px;
-    font-size: 18px;
-    border: none;
-    outline: none;
-    background: transparent;
-    resize: none;
-}
 </style>
 </head>
-
 <body>
 
 <div class="notebook">
-
-    <!-- CLOSED COVER -->
-    <div class="cover" id="cover"></div>
-
-    <!-- REAL FLIPBOOK -->
-    <div id="book">
-        <div class="page"><h2>Diary Page 1</h2><textarea></textarea></div>
-        <div class="page"><h2>Diary Page 2</h2><textarea></textarea></div>
-        <div class="page"><h2>Diary Page 3</h2><textarea></textarea></div>
-        <div class="page"><h2>Diary Page 4</h2><textarea></textarea></div>
+    <div class="page">
+        <h2>Diary Page 1</h2>
+        <p>Your diary text goes here...</p>
     </div>
 
+    <div class="page">
+        <h2>Diary Page 2</h2>
+        <p>More diary content here...</p>
+    </div>
 </div>
-
-<script>
-/* Open notebook */
-$("#cover").click(function(){
-    $("#cover").fadeOut(300);
-    $("#book").fadeIn(300).turn({
-        width: 420,
-        height: 550,
-        autoCenter: false
-    });
-});
-
-/* Close notebook when returned to page 1 left */
-$("#book").bind("turning", function(e, page){
-    if(page == 1){
-        setTimeout(() => {
-            $("#book").fadeOut(300);
-            $("#cover").fadeIn(300);
-        }, 300);
-    }
-});
-</script>
 
 </body>
 </html>
