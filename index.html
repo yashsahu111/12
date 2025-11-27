@@ -1,247 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>For Someone Special 💖</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Virtual Diary 📘</title>
+
+<style>
     body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(180deg, #ffe6f0, #ffd1dc);
-      color: #4a4a4a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow-x: hidden;
+        margin: 0;
+        padding: 0;
+        background: #f5e9d5;
+        font-family: 'Georgia', serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
     }
 
-    h1 {
-      font-size: 2rem;
-      margin-top: 40px;
-      color: #ff4f8b;
-      text-shadow: 0 2px 4px rgba(255, 79, 139, 0.3);
-      animation: float 3s ease-in-out infinite;
+    .book {
+        width: 90%;
+        max-width: 500px;
+        height: 75vh;
+        background: #fff8ec;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        border-radius: 15px;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: 1s;
+        padding: 20px;
     }
 
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+    .book.closed {
+        transform: rotateY(-90deg);
+    }
+
+    h2 {
+        text-align: center;
+        margin-top: 0;
+        font-size: 1.4rem;
+        color: #7b4b17;
+    }
+
+    .date-box {
+        text-align: center;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        color: #5a3811;
+    }
+
+    textarea {
+        width: 100%;
+        height: 70%;
+        border: none;
+        padding: 10px;
+        font-size: 1rem;
+        background: transparent;
+        resize: none;
+        outline: none;
+        color: #4b2c12;
+        line-height: 1.5;
+    }
+
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
     }
 
     button {
-      margin-top: 20px;
-      background-color: #ff4f8b;
-      color: white;
-      border: none;
-      border-radius: 25px;
-      padding: 12px 24px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s ease;
-      box-shadow: 0 4px 8px rgba(255, 79, 139, 0.3);
+        background: #c28c4b;
+        border: none;
+        padding: 8px 18px;
+        color: white;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 
     button:hover {
-      background-color: #ff6fa8;
-      transform: scale(1.05);
+        background: #d19a5f;
     }
 
-    .letter {
-      width: 90%;
-      max-width: 420px;
-      margin-top: 20px;
-      background: linear-gradient(135deg, #fff0f5 0%, #ffe6f0 100%);
-      border-radius: 20px;
-      padding: 20px;
-      line-height: 1.8;
-      font-size: 1.05rem;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 1s ease;
-      height: 450px;
-      overflow-y: auto;
-      scroll-behavior: smooth;
-      background-image: radial-gradient(circle at top left, #ffe0eb 0%, transparent 40%), 
-                        radial-gradient(circle at bottom right, #ffd6e0 0%, transparent 40%);
-      border: 3px solid #ffd6e0;
+    #openDiary {
+        position: absolute;
+        bottom: 25px;
+        font-size: 1.1rem;
     }
-
-    .letter.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    #openPhotos {
-      display: none;
-      animation: fadeIn 1s ease forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .popup {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
-      color: #fff;
-      padding: 20px;
-      animation: popUp 0.5s ease;
-    }
-
-    @keyframes popUp {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .popup p {
-      margin-bottom: 20px;
-      font-size: 1.2rem;
-      color: #ffb6c1;
-      font-weight: 600;
-      text-shadow: 0 2px 4px rgba(255, 192, 203, 0.6);
-    }
-
-    .popup img {
-      width: 120px;
-      height: 160px;
-      object-fit: cover;
-      border-radius: 15px;
-      border: 4px solid #ffb6c1;
-      margin: 10px;
-      box-shadow: 0 0 20px rgba(255, 182, 193, 0.8);
-      transition: transform 0.3s ease;
-    }
-
-    .popup img:hover {
-      transform: scale(1.05);
-    }
-
-    footer {
-      margin-top: 50px;
-      padding-bottom: 30px;
-      font-size: 0.9rem;
-      color: #ff4f8b;
-    }
-
-    @media (max-width: 600px) {
-      h1 { font-size: 1.6rem; }
-      button { padding: 10px 20px; font-size: 0.9rem; }
-      .popup img { width: 100px; height: 130px; }
-    }
-  </style>
+</style>
 </head>
+
 <body>
-  <h1>For Someone Special 💖</h1>
 
-  <button id="openLetter">Open Letter 💌</button>
+<button id="openDiary">Open Diary 📘</button>
 
-  <div class="letter" id="letter">
-    <p>
-      Meri jaan,  
-      <br><br>
-      Kabhi kabhi lagta hai ki duniya mein sabse khoobsurat cheez tumhari muskaan hai.  
-      Tumhe dekhta hoon to lagta hai jaise time slow ho gaya ho — aur sirf tum aur main hain iss duniya mein.  
-      <br><br>
-      Tum meri life ka wo hissa ho jahan se har khushi shuru hoti hai.  
-      Tumhari aankhon mein jo shine hai, wo meri duniya roshan karti hai.  
-      <br><br>
-      Main nahi jaanta future kya lekar aayega, par mujhe yeh zaroor pata hai —  
-      jab tak tum meri zindagi mein ho, sab kuch perfect lagta hai.  
-      <br><br>
-      Tum mere liye sirf ek insaan nahi ho, tum ek emotion ho, ek feeling ho jo har din aur gehri hoti ja rahi hai.  
-      <br><br>
-      Har heartbeat tumhara naam leti hai, aur har dua tumhare liye hi hoti hai.  
-      <br><br>
-      Tum meri smile ki wajah ho, meri life ka best chapter ho, aur meri story ka sabse pyara part.  
-      <br><br>
-      Bas itna yaad rakhna — koi hai jo tumhe hamesha dil se chahta hai 💕  
-      <br><br>
-      Tumhara,  
-      <br>💖 Apna-sa 💖
-    </p>
-  </div>
+<div class="book closed" id="diaryBook">
 
-  <audio id="audioPlayer">
-    <source src="song.mp3" type="audio/mpeg">
-  </audio>
+    <h2>My Diary</h2>
 
-  <button id="openPhotos">Surprise!! 🎁</button>
+    <div class="date-box" id="dateBox"></div>
 
-  <div class="popup" id="photoPopup">
-    <p>Dekho photo kesi bhi ho ji, hu to me smart 😎</p>
-    <div>
-      <img src="photo1.jpg" alt="Photo 1">
-      <img src="photo2.jpg" alt="Photo 2">
+    <textarea id="entryText" placeholder="Write your thoughts here..."></textarea>
+
+    <div class="controls">
+        <button id="prevDay">◀ Previous</button>
+        <button id="nextDay">Next ▶</button>
     </div>
-  </div>
 
-  <footer>Made with 💕 for someone truly special.</footer>
+</div>
 
-  <script>
-    const openLetterBtn = document.getElementById('openLetter');
-    const letter = document.getElementById('letter');
-    const audio = document.getElementById('audioPlayer');
-    const openPhotosBtn = document.getElementById('openPhotos');
-    const popup = document.getElementById('photoPopup');
+<script>
+    const diary = document.getElementById("diaryBook");
+    const openBtn = document.getElementById("openDiary");
+    const entry = document.getElementById("entryText");
+    const dateBox = document.getElementById("dateBox");
 
-    let letterOpened = false;
-    let surpriseShown = false;
+    let currentDate = new Date();
 
-    openLetterBtn.addEventListener('click', () => {
-      const show = !letter.classList.contains('show');
-      letter.classList.toggle('show', show);
+    // Format date: Monday, 5 Feb 2025
+    function formatDate(date) {
+        return date.toLocaleDateString("en-IN", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+    }
 
-      if (show) {
-        letterOpened = true;
-        audio.play();
-        openLetterBtn.textContent = 'Close Letter 💌';
-      } else {
-        letterOpened = false;
-        audio.pause();
-        openLetterBtn.textContent = 'Open Letter 💌';
-        openPhotosBtn.style.display = 'none';
-        surpriseShown = false;
-      }
+    // Load saved entry from localStorage
+    function loadEntry() {
+        let key = currentDate.toDateString();
+        let saved = localStorage.getItem(key);
+        entry.value = saved || "";
+        dateBox.innerText = formatDate(currentDate);
+    }
+
+    // Save on typing
+    entry.addEventListener("input", () => {
+        let key = currentDate.toDateString();
+        localStorage.setItem(key, entry.value);
     });
 
-    // show Surprise only when letter is open and scrolled to the end (once)
-    letter.addEventListener('scroll', () => {
-      if (!letterOpened || surpriseShown) return;
-      const scrolledToBottom = Math.ceil(letter.scrollTop + letter.clientHeight) >= letter.scrollHeight;
-      if (scrolledToBottom) {
-        surpriseShown = true;
-        setTimeout(() => {
-          if (letterOpened) {
-            openPhotosBtn.style.display = 'block';
-          }
-        }, 1500);
-      }
+    // Open / Close diary
+    openBtn.addEventListener("click", () => {
+        diary.classList.toggle("closed");
+
+        if (!diary.classList.contains("closed")) {
+            openBtn.innerText = "Close Diary 📕";
+            loadEntry();
+        } else {
+            openBtn.innerText = "Open Diary 📘";
+        }
     });
 
-    // popup with photos
-    openPhotosBtn.addEventListener('click', () => {
-      popup.style.display = 'flex';
-    });
+    // Navigation buttons
+    document.getElementById("prevDay").onclick = () => {
+        currentDate.setDate(currentDate.getDate() - 1);
+        loadEntry();
+    };
 
-    // click outside popup to close
-    popup.addEventListener('click', () => {
-      popup.style.display = 'none';
-    });
-  </script>
+    document.getElementById("nextDay").onclick = () => {
+        currentDate.setDate(currentDate.getDate() + 1);
+        loadEntry();
+    };
+</script>
+
 </body>
 </html>
