@@ -2,120 +2,111 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Real Notebook Diary</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.css">
+<title>Real Spiral Notebook Diary</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script>
 
 <style>
 body {
-    background: #f3e9df;
+    background: #f2e7d8;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: hidden;
+    margin: 0;
     font-family: 'Georgia';
 }
 
-/* CLOSED DIARY COVER */
-#closed-book {
-    width: 350px;
-    height: 500px;
-    background: url('https://i.imgur.com/e9n7T1x.jpeg');
+/* REAL NOTEBOOK FRAME */
+.notebook {
+    width: 900px;
+    height: 600px;
+    position: relative;
+    background: url('https://i.imgur.com/KW5EguR.png'); /* spiral notebook frame */
     background-size: cover;
-    border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-/* FLIPBOOK */
-#diary {
-    width: 700px;
-    height: 500px;
+/* CLOSED COVER */
+.cover {
+    width: 420px;
+    height: 550px;
+    background: url('https://i.imgur.com/7YIcaCm.jpeg'); /* YOUR COVER */
+    background-size: cover;
+    position: absolute;
+    left: 30px;
+    top: 25px;
+    z-index: 5;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    border-radius: 6px;
+}
+
+/* FLIPBOOK PAGES INSIDE NOTEBOOK */
+#book {
+    width: 420px;
+    height: 550px;
+    position: absolute;
+    left: 30px;
+    top: 25px;
     display: none;
 }
 
+/* Inside pages */
 .page {
-    background: #fffaf2;
+    background: #fffdf6;
     padding: 40px;
-    font-size: 18px;
+    font-size: 19px;
     line-height: 28px;
-    position: relative;
 }
 
-.add-photo {
-    border: 2px dashed #d5a67c;
-    padding: 6px 12px;
-    display: inline-block;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.photo-preview {
-    width: 180px;
-    margin-top: 10px;
-    border-radius: 6px;
+textarea {
+    width: 100%;
+    height: 300px;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    background: transparent;
+    resize: none;
 }
 </style>
 </head>
 
 <body>
 
-<!-- CLOSED BOOK -->
-<div id="closed-book"></div>
+<div class="notebook">
 
-<!-- OPEN BOOK (HIDDEN INITIALLY) -->
-<div id="diary">
-    <div class="page">📘 <b>Front Cover</b><br><br>Click right page to open.</div>
+    <!-- CLOSED COVER -->
+    <div class="cover" id="cover"></div>
 
-    <div class="page">
-        <h3>Diary Entry 1</h3>
-        <textarea style="width:100%; height:250px;"></textarea>
-        <br>
-        <label class="add-photo">Add Photo
-            <input type="file" style="display:none" accept="image/*" onchange="loadPhoto(event, 1)">
-        </label>
-        <img id="photo1" class="photo-preview">
+    <!-- REAL FLIPBOOK -->
+    <div id="book">
+        <div class="page"><h2>Diary Page 1</h2><textarea></textarea></div>
+        <div class="page"><h2>Diary Page 2</h2><textarea></textarea></div>
+        <div class="page"><h2>Diary Page 3</h2><textarea></textarea></div>
+        <div class="page"><h2>Diary Page 4</h2><textarea></textarea></div>
     </div>
 
-    <div class="page">
-        <h3>Diary Entry 2</h3>
-        <textarea style="width:100%; height:250px;"></textarea>
-        <br>
-        <label class="add-photo">Add Photo
-            <input type="file" style="display:none" accept="image/*" onchange="loadPhoto(event, 2)">
-        </label>
-        <img id="photo2" class="photo-preview">
-    </div>
-
-    <div class="page">📘 <b>Back Cover</b><br><br>Click left page to close.</div>
 </div>
 
-
 <script>
-function loadPhoto(event, num) {
-    document.getElementById("photo" + num).src =
-        URL.createObjectURL(event.target.files[0]);
-}
-
-/* OPEN BOOK */
-$("#closed-book").click(function(){
-    $("#closed-book").fadeOut(300);
-    $("#diary").fadeIn(300).turn({
-        width: 700,
-        height: 500,
-        autoCenter: true
+/* Open notebook */
+$("#cover").click(function(){
+    $("#cover").fadeOut(300);
+    $("#book").fadeIn(300).turn({
+        width: 420,
+        height: 550,
+        autoCenter: false
     });
 });
 
-/* CLOSE BOOK (when flipping back to cover) */
-$("#diary").bind("turning", function(event, page){
-    if (page === 1) {
+/* Close notebook when returned to page 1 left */
+$("#book").bind("turning", function(e, page){
+    if(page == 1){
         setTimeout(() => {
-            $("#diary").fadeOut(300);
-            $("#closed-book").fadeIn(300);
-        }, 400);
+            $("#book").fadeOut(300);
+            $("#cover").fadeIn(300);
+        }, 300);
     }
 });
 </script>
