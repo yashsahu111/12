@@ -9,136 +9,142 @@
     <script src="lib/turn.min.js"></script>
 
     <style>
-        /* --- General Setup --- */
-        body {
-            background-color: #f4f4f9; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif; 
-            /* Turn.js manages 3D perspective, so we disable body's perspective */
-            perspective: none; 
-        }
-        
-        /* --- The Book Container (Controlled by Turn.js) --- */
-        #flipbook {
-            width: 600px; /* Two pages wide (2 * 300px) */
-            height: 400px; /* Page height */
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5); /* Shadow for the whole closed book */
-        }
+    /* --- General Setup --- */
+    body {
+        background-color: #f4f4f9; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif; 
+        perspective: none; 
+    }
+    
+    /* --- The Book Container (Controlled by Turn.js) --- */
+    #flipbook {
+        width: 600px; /* Two pages wide (2 * 300px) */
+        height: 400px; /* Page height */
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5); /* Shadow for the whole closed book */
+    }
 
-        /* --- Page Styling (Applies to all pages, including covers) --- */
-        .page {
-            /* These dimensions are set automatically by Turn.js */
-            background-color: #fffff0; /* Default inner paper color */
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            padding: 20px;
-            overflow: hidden; 
-            /* Text content styling */
-            line-height: 1.6;
-            color: #444;
-        }
+    /* --- Page Styling (Applies to all pages, including covers) --- */
+    .page {
+        background-color: #fffff0; /* Default inner paper color */
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        padding: 20px;
+        overflow: hidden; 
+        line-height: 1.6;
+        color: #444;
+    }
 
-        /* --- COVER STYLING (The First and Last Pages) --- */
-        .cover {
-            background-color: #e8e3d6 !important; /* The light paper background color */
-            border: none; /* No visible border on the covers */
-            padding: 0; /* Remove padding from cover */
-        }
-        
-        /* --- Spine/Binding Effect (Visually aligned on the center when open) --- */
-        .spine-effect {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            width: 20px;
-            height: 100%;
-            background-color: #333; 
-            /* Creates the spiral/binding look */
-            background-image: repeating-linear-gradient(to bottom, #555, #555 2px, #333 2px, #333 5px);
-            transform: translateX(-50%); 
-            z-index: 999; 
-            pointer-events: none;
-        }
+    /* --- COVER STYLING (The First and Last Pages) --- */
+    .cover {
+        background-color: #e8e3d6 !important; /* The light paper background color */
+        border: none;
+        padding: 0;
+    }
 
-        /* --- COVER DESIGN (Matching your image) --- */
-        .cover-design {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            /* Ensure shapes/text are visible over the cover background */
-            z-index: 10;
-        }
+    /* --- Spine/Binding Effect --- */
+    /* This element is now ONLY in the front cover HTML and is positioned on the edge */
+    .spine-effect {
+        position: absolute;
+        /* Position the spine effect on the very left edge of the front cover */
+        left: -20px; /* Moves it outside the cover to sit on the book's edge */
+        top: 0;
+        width: 20px;
+        height: 100%;
+        background-color: #333; 
+        /* Creates the spiral/binding look */
+        background-image: repeating-linear-gradient(to bottom, #555, #555 2px, #333 2px, #333 5px);
+        z-index: 999; 
+        pointer-events: none;
+    }
+    
+    /* When the book is open, the spine-effect from the cover flips away with the cover.
+       We don't need a separate spine element for the center. 
+       We will add a subtle margin line to the inner pages instead. */
+    .page:not(.cover) {
+        border-left: 1px dashed #f08080; /* Red margin line for inner pages (left side) */
+        border-right: 1px dashed #ccc;  /* Light line for inner pages (right side) */
+        padding-left: 30px; /* Increase left padding to account for margin line */
+    }
 
-        /* Abstract Shape 1: Top Left (Blue/Grey) */
-        .cover-design::before {
-            content: '';
-            position: absolute;
-            top: -50px;
-            left: -50px;
-            width: 150px;
-            height: 150px;
-            background-color: #b0c4de; 
-            border-radius: 50%;
-            opacity: 0.8;
-            transform: rotate(-10deg);
-        }
+    /* --- COVER DESIGN (Matching your image) --- */
+    .cover-design {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+    }
 
-        /* Abstract Shape 2: Middle/Bottom (Tan/Brown) */
-        .cover-design::after {
-            content: '';
-            position: absolute;
-            bottom: -80px;
-            left: 30px;
-            width: 250px;
-            height: 250px;
-            background-color: #d2b48c; 
-            border-radius: 45% 55% 50% 50% / 60% 60% 40% 40%;
-            opacity: 0.7;
-            transform: rotate(5deg);
-        }
+    /* Abstract Shape 1: Top Left (Blue/Grey) */
+    .cover-design::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        left: -50px;
+        width: 150px;
+        height: 150px;
+        background-color: #b0c4de; 
+        border-radius: 50%;
+        opacity: 0.8;
+        transform: rotate(-10deg);
+    }
 
-        /* Abstract Shape 3: Bottom Right (Rust/Orange) */
-        .shape-3 { 
-            position: absolute;
-            bottom: 0px;
-            right: 0px;
-            width: 150px;
-            height: 150px;
-            background-color: #cd853f; 
-            border-radius: 50%;
-            opacity: 0.6;
-            transform: rotate(20deg) translate(50px, 50px);
-            z-index: 5;
-        }
+    /* Abstract Shape 2: Middle/Bottom (Tan/Brown) */
+    .cover-design::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: 30px;
+        width: 250px;
+        height: 250px;
+        background-color: #d2b48c; 
+        border-radius: 45% 55% 50% 50% / 60% 60% 40% 40%;
+        opacity: 0.7;
+        transform: rotate(5deg);
+    }
 
-        .quote {
-            position: absolute;
-            top: 35%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Segoe Script', 'Handlee', cursive, sans-serif; 
-            font-size: 1.2em;
-            font-weight: 500;
-            color: #333;
-            text-align: center;
-            line-height: 1.4;
-            z-index: 30; 
-            padding: 5px;
-            background-color: rgba(255, 255, 255, 0.5); 
-        }
+    /* Abstract Shape 3: Bottom Right (Rust/Orange) */
+    .shape-3 { 
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+        width: 150px;
+        height: 150px;
+        background-color: #cd853f; 
+        border-radius: 50%;
+        opacity: 0.6;
+        transform: rotate(20deg) translate(50px, 50px);
+        z-index: 5;
+    }
 
-        /* --- INNER PAGE STYLING --- */
-        .page h2 {
-            color: #4e342e;
-            border-bottom: 1px dashed #ccc;
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-    </style>
+    .quote {
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Segoe Script', 'Handlee', cursive, sans-serif; 
+        font-size: 1.2em;
+        font-weight: 500;
+        color: #333;
+        text-align: center;
+        line-height: 1.4;
+        z-index: 30; 
+        padding: 5px;
+        background-color: rgba(255, 255, 255, 0.5); 
+    }
+
+    /* --- INNER PAGE STYLING --- */
+    .page h2 {
+        color: #4e342e;
+        border-bottom: 1px dashed #ccc;
+        padding-bottom: 10px;
+        margin-top: 0;
+    }
+</style>
 </head>
 <body>
     <div id="flipbook">
@@ -182,3 +188,4 @@
     </script>
 </body>
 </html>
+
