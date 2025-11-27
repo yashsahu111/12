@@ -1,475 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Spiral Notebook Diary</title>
-
-<!-- jQuery and turn.js -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/turn.js@4/turn.min.js"></script>
+<meta charset="UTF-8">
+<title>Real Notebook Diary</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script>
 
 <style>
-  :root{
-    --paper: #fffdf9;
-    --accent: #c69a63;
-    --bg: #f6efe9;
-    --text: #3b2a20;
-    --page-width-desktop: 360px;
-    --page-height-desktop: 540px;
-  }
+body {
+    background: #f3e9df;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Georgia';
+}
 
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background: linear-gradient(180deg, #fbf6f2 0%, #f1e9e2 100%);
-    color:var(--text);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    padding:20px;
-  }
-
-  .container {
-    width: min(96vw, calc(2 * var(--page-width-desktop) + 220px));
-    display:flex;
-    gap:20px;
-    align-items:flex-start;
-    justify-content:center;
-    position:relative;
-  }
-
-  /* Left area: cover (front/back) + spiral */
-  .cover-wrap {
-    width: 220px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    gap:12px;
-  }
-
-  /* Spiral mock on left of pages */
-  .spiral {
-    width: 28px;
-    height: calc(var(--page-height-desktop) + 40px);
-    background:
-      radial-gradient(circle at 14px 18px, #222 6px, transparent 7px),
-      radial-gradient(circle at 14px 54px, #222 6px, transparent 7px),
-      radial-gradient(circle at 14px 90px, #222 6px, transparent 7px),
-      radial-gradient(circle at 14px 126px, #222 6px, transparent 7px),
-      radial-gradient(circle at 14px 162px, #222 6px, transparent 7px),
-      radial-gradient(circle at 14px 198px, #222 6px, transparent 7px),
-      radial-gradient(circle at 14px 234px, #222 6px, transparent 7px),
-      radial-gradient(circle at 14px 270px, #222 6px, transparent 7px),
-      radial-gradient(circle at 14px 306px, #222 6px, transparent 7px),
-      radial-gradient(circle at 14px 342px, #222 6px, transparent 7px);
-    background-size: 100% 100%;
+/* CLOSED DIARY COVER */
+#closed-book {
+    width: 350px;
+    height: 500px;
+    background: url('https://i.imgur.com/e9n7T1x.jpeg');
+    background-size: cover;
     border-radius: 8px;
-    box-shadow: 6px 8px 14px rgba(0,0,0,0.12);
-    transform: translateY(10px);
-  }
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
 
-  /* Cover card styling */
-  .cover {
+/* FLIPBOOK */
+#diary {
+    width: 700px;
+    height: 500px;
+    display: none;
+}
+
+.page {
+    background: #fffaf2;
+    padding: 40px;
+    font-size: 18px;
+    line-height: 28px;
+    position: relative;
+}
+
+.add-photo {
+    border: 2px dashed #d5a67c;
+    padding: 6px 12px;
+    display: inline-block;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.photo-preview {
     width: 180px;
-    height: calc(var(--page-height-desktop) / 1.2);
-    background: linear-gradient(180deg,#f3eae0, #efe7db);
-    border-radius: 10px;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.18);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:18px;
-    position:relative;
-    cursor:pointer;
-    transition: transform 700ms cubic-bezier(.2,.9,.3,1), box-shadow 300ms;
-  }
-
-  .cover:active{ transform: scale(.995) }
-
-  .cover h2 {
-    margin:0;
-    font-size:20px;
-    letter-spacing:0.6px;
-    color:var(--text);
-  }
-  .cover .sub {
-    font-size:12px;
-    color:#8a6c4b;
-    margin-top:8px;
-  }
-
-  /* Back cover - when open appears to the right */
-  .back-cover {
-    width: 180px;
-    height: calc(var(--page-height-desktop) / 1.2);
-    background: linear-gradient(180deg,#efe6db, #e9dfd6);
-    border-radius: 10px;
-    box-shadow: 0 6px 22px rgba(0,0,0,0.12);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    padding:18px;
-  }
-
-  /* Open/Close Buttons on cover area */
-  .cover-actions{
-    display:flex;
-    gap:8px;
-    margin-top:6px;
-  }
-  .btn{
-    background:var(--accent);
-    color:white;
-    border:none;
-    padding:8px 12px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:700;
-  }
-
-  /* Flipbook container */
-  #book-area {
-    width: calc(2 * var(--page-width-desktop));
-    max-width: calc(100vw - 280px);
-    height: var(--page-height-desktop);
-    perspective: 1200px;
-  }
-
-  /* Styling for turn.js pages - each .page must be styled */
-  .page {
-    width: var(--page-width-desktop);
-    height: var(--page-height-desktop);
-    background: linear-gradient(180deg, var(--paper) 0%, #fffefc 100%);
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    box-sizing: border-box;
-    overflow:hidden;
-    position:relative;
-  }
-
-  .page-inner{
-    width:100%;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-  }
-
-  /* header */
-  .page .header {
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-  }
-  .month { font-size:12px; color:#b07a41; font-weight:700; letter-spacing:1.4px; }
-  .date { font-size:12px; color:#a07a58; }
-
-  /* ruled lines background */
-  .writing-area { position:relative; flex:1; margin-top:8px; }
-  .writing-area .lines {
-    position:absolute; inset:0;
-    background-image: linear-gradient(to bottom, rgba(0,0,0,0.06) 1px, transparent 1px);
-    background-size: 100% 28px;
-    pointer-events:none;
-  }
-  .entry {
-    position:relative; z-index:1;
-    width:100%; height:100%;
-    border:0; resize:none; background:transparent;
-    padding:8px 12px; font-size:15px; line-height:26px; color:var(--text);
-    outline:none; box-sizing:border-box;
-  }
-
-  .page-photos { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
-  .page-photos img { width:120px; height:90px; object-fit:cover; border-radius:8px;
-    border:3px solid rgba(198,154,113,0.12); box-shadow:0 8px 20px rgba(0,0,0,0.08); }
-
-  .page-footer { display:flex; justify-content:space-between; align-items:center; margin-top:10px; }
-
-  .add-photo {
-    background:#fff; color:var(--accent); border:2px dashed rgba(198,154,113,0.25);
-    padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700;
-  }
-  .save-btn { background:transparent; color:#7a4f33; border:none; font-weight:700; cursor:pointer; }
-
-  /* overlay popup for images */
-  .overlay {
-    display:none; position:fixed; z-index:9999; inset:0; background: rgba(0,0,0,0.75);
-    align-items:center; justify-content:center; padding:20px;
-  }
-  .overlay .card {
-    background:white; padding:16px; border-radius:12px; max-width:90%; max-height:90%; overflow:auto;
-  }
-
-  /* responsive */
-  @media (max-width:900px){
-    :root{ --page-width-desktop: 300px; --page-height-desktop: 520px; }
-    .cover-wrap { display:none; } /* hide left cover on very small screens (use open button) */
-    .container { padding: 10px; }
-    #book-area { width: calc(100vw - 24px); }
-  }
+    margin-top: 10px;
+    border-radius: 6px;
+}
 </style>
 </head>
+
 <body>
 
-<div class="container">
+<!-- CLOSED BOOK -->
+<div id="closed-book"></div>
 
-  <!-- COVER / SPIRAL AREA -->
-  <div class="cover-wrap" id="coverWrap">
-    <div class="spiral" aria-hidden="true"></div>
+<!-- OPEN BOOK (HIDDEN INITIALLY) -->
+<div id="diary">
+    <div class="page">📘 <b>Front Cover</b><br><br>Click right page to open.</div>
 
-    <!-- front cover (click to open) -->
-    <div class="cover" id="frontCover" title="Click to open diary">
-      <div>
-        <h2>Diary</h2>
-        <div class="sub">Click to open</div>
-      </div>
+    <div class="page">
+        <h3>Diary Entry 1</h3>
+        <textarea style="width:100%; height:250px;"></textarea>
+        <br>
+        <label class="add-photo">Add Photo
+            <input type="file" style="display:none" accept="image/*" onchange="loadPhoto(event, 1)">
+        </label>
+        <img id="photo1" class="photo-preview">
     </div>
 
-    <div class="cover-actions">
-      <button class="btn" id="openBtn">Open</button>
-      <button class="btn" id="closeBtn" style="display:none">Close</button>
+    <div class="page">
+        <h3>Diary Entry 2</h3>
+        <textarea style="width:100%; height:250px;"></textarea>
+        <br>
+        <label class="add-photo">Add Photo
+            <input type="file" style="display:none" accept="image/*" onchange="loadPhoto(event, 2)">
+        </label>
+        <img id="photo2" class="photo-preview">
     </div>
 
-    <!-- back cover shown beneath when open (decorative) -->
-    <div class="back-cover" id="backCover" style="display:none">
-      <div><strong>My Notebook</strong></div>
-    </div>
-  </div>
-
-  <!-- BOOK AREA (turn.js) -->
-  <div id="book-area">
-    <div id="flipbook">
-      <!-- pages injected by JS -->
-    </div>
-  </div>
-
+    <div class="page">📘 <b>Back Cover</b><br><br>Click left page to close.</div>
 </div>
 
-<!-- image overlay for full view -->
-<div class="overlay" id="overlay">
-  <div class="card" id="overlayCard"></div>
-</div>
 
 <script>
-/* CONFIG */
-const TOTAL_PAGES = 20; // change to desired pages
-const PAGE_W = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--page-width-desktop')) || 360;
-const PAGE_H = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--page-height-desktop')) || 540;
-
-/* helper arrays */
-const monthNames = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
-const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-
-/* build pages and cover/back cover behavior */
-function buildBook(pages){
-  const flip = document.getElementById('flipbook');
-  flip.innerHTML = '';
-
-  // add a left blank cover page to allow nice opening
-  const leftBlank = document.createElement('div');
-  leftBlank.className = 'page';
-  leftBlank.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;"><strong style="color:#a07a58">Cover</strong></div>`;
-  flip.appendChild(leftBlank);
-
-  for(let i=1;i<=pages;i++){
-    const p = document.createElement('div');
-    p.className = 'page';
-    p.dataset.page = i;
-    p.innerHTML = `
-      <div class="page-inner">
-        <div class="header">
-          <div class="month" id="month-${i}">MONTH</div>
-          <div class="date" id="date-${i}">DATE</div>
-        </div>
-
-        <div class="writing-area">
-          <div class="lines" aria-hidden="true"></div>
-          <textarea class="entry" id="entry-${i}" placeholder="Write your thoughts..."></textarea>
-        </div>
-
-        <div class="page-photos" id="photos-${i}"></div>
-
-        <div class="page-footer">
-          <label class="add-photo" for="file-${i}">+ Add Photo</label>
-          <input type="file" id="file-${i}" accept="image/*" style="display:none" />
-          <button class="save-btn" id="save-${i}">Save</button>
-        </div>
-      </div>`;
-    flip.appendChild(p);
-  }
-
-  // add a right blank back cover for nicer closing
-  const rightBlank = document.createElement('div');
-  rightBlank.className = 'page';
-  rightBlank.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;"><strong style="color:#a07a58">Back</strong></div>`;
-  flip.appendChild(rightBlank);
+function loadPhoto(event, num) {
+    document.getElementById("photo" + num).src =
+        URL.createObjectURL(event.target.files[0]);
 }
 
-/* initialize turn.js */
-function initTurn(){
-  $("#flipbook").turn({
-    width: Math.min(window.innerWidth * 0.94, 2 * PAGE_W + 40),
-    height: Math.min(window.innerHeight * 0.82, PAGE_H),
-    autoCenter: true,
-    gradients: true,
-    elevation: 60
-  });
-}
+/* OPEN BOOK */
+$("#closed-book").click(function(){
+    $("#closed-book").fadeOut(300);
+    $("#diary").fadeIn(300).turn({
+        width: 700,
+        height: 500,
+        autoCenter: true
+    });
+});
 
-/* populate dates and load saved data */
-function populateAndLoad(total){
-  for(let i=1;i<=total;i++){
-    const dt = new Date();
-    dt.setDate(dt.getDate() + (i - 1));
-    const m = monthNames[dt.getMonth()];
-    const formatted = `${dayNames[dt.getDay()]}, ${dt.getDate()} ${m} ${dt.getFullYear()}`;
-    const monthEl = document.getElementById(`month-${i}`);
-    const dateEl = document.getElementById(`date-${i}`);
-    if(monthEl) monthEl.innerText = m;
-    if(dateEl) dateEl.innerText = formatted;
-
-    // load saved
-    const key = 'diary_page_' + i;
-    const raw = localStorage.getItem(key);
-    if(raw){
-      try {
-        const data = JSON.parse(raw);
-        const ta = document.getElementById(`entry-${i}`);
-        if(ta) ta.value = data.text || '';
-        const photos = data.photos || [];
-        const photosContainer = document.getElementById(`photos-${i}`);
-        if(photosContainer){
-          photosContainer.innerHTML = '';
-          photos.forEach(src => {
-            const im = document.createElement('img');
-            im.src = src;
-            im.addEventListener('click', ()=> openOverlay(src));
-            photosContainer.appendChild(im);
-          });
-        }
-      } catch(e){ console.warn("Failed to parse", e); }
+/* CLOSE BOOK (when flipping back to cover) */
+$("#diary").bind("turning", function(event, page){
+    if (page === 1) {
+        setTimeout(() => {
+            $("#diary").fadeOut(300);
+            $("#closed-book").fadeIn(300);
+        }, 400);
     }
-  }
-}
-
-/* wire up inputs and save actions */
-function wireEvents(total){
-  for(let i=1;i<=total;i++){
-    const fileInput = document.getElementById(`file-${i}`);
-    fileInput.addEventListener('change', (ev) => {
-      const f = ev.target.files[0];
-      if(!f) return;
-      const reader = new FileReader();
-      reader.onload = function(e){
-        const src = e.target.result;
-        const img = document.createElement('img');
-        img.src = src;
-        img.addEventListener('click', ()=> openOverlay(src));
-        document.getElementById(`photos-${i}`).appendChild(img);
-        savePage(i);
-      };
-      reader.readAsDataURL(f);
-      fileInput.value = "";
-    });
-
-    const ta = document.getElementById(`entry-${i}`);
-    ta.addEventListener('input', ()=> {
-      if(window._saveTimeout) clearTimeout(window._saveTimeout);
-      window._saveTimeout = setTimeout(()=> savePage(i), 800);
-    });
-
-    document.getElementById(`save-${i}`).addEventListener('click', ()=> {
-      savePage(i);
-      const btn = document.getElementById(`save-${i}`);
-      const orig = btn.innerText;
-      btn.innerText = 'Saved ✓';
-      setTimeout(()=> btn.innerText = orig, 1200);
-    });
-  }
-}
-
-/* save single page to localStorage */
-function savePage(i){
-  const text = document.getElementById(`entry-${i}`).value || '';
-  const photos = [...document.querySelectorAll(`#photos-${i} img`)].map(im=> im.src);
-  const payload = { text, photos, ts: Date.now() };
-  localStorage.setItem('diary_page_' + i, JSON.stringify(payload));
-}
-
-/* show overlay image(s) - for single image click view */
-function openOverlay(src){
-  const overlay = document.getElementById('overlay');
-  const card = document.getElementById('overlayCard');
-  card.innerHTML = `<div style="text-align:right;"><button id="closeOv" style="background:transparent;border:none;font-weight:700;cursor:pointer">Close ✕</button></div>
-    <img src="${src}" style="max-width:100%;height:auto;border-radius:8px;display:block;margin:0 auto" />`;
-  overlay.style.display = 'flex';
-  document.getElementById('closeOv').addEventListener('click', ()=> overlay.style.display = 'none');
-  overlay.addEventListener('click', (e)=> { if(e.target === overlay) overlay.style.display = 'none'; });
-}
-
-/* cover open/close animation behavior */
-function wireCoverBehavior(total){
-  const front = document.getElementById('frontCover');
-  const openBtn = document.getElementById('openBtn');
-  const closeBtn = document.getElementById('closeBtn');
-  const backCover = document.getElementById('backCover');
-  const coverWrap = document.getElementById('coverWrap');
-
-  function openDiary(){
-    // animate front cover fold - simple visual: hide cover and show flipbook area
-    front.style.transform = 'rotateY(-170deg) translateX(-20px)';
-    front.style.transition = 'transform 700ms cubic-bezier(.2,.9,.3,1), opacity 300ms';
-    front.style.opacity = '0';
-    openBtn.style.display = 'none';
-    closeBtn.style.display = 'inline-block';
-    backCover.style.display = 'block';
-    // initialize or refresh turn
-    setTimeout(()=> {
-      try { $("#flipbook").turn("size", Math.min(window.innerWidth * 0.94, 2 * PAGE_W + 40), Math.min(window.innerHeight * 0.82, PAGE_H)); } catch(e){}
-      // go to page 2 (first content page)
-      try { $("#flipbook").turn("page", 2); } catch(e){}
-    }, 500);
-  }
-
-  function closeDiary(){
-    front.style.transform = '';
-    front.style.opacity = '1';
-    openBtn.style.display = 'inline-block';
-    closeBtn.style.display = 'none';
-    backCover.style.display = 'none';
-    // go to first page (cover) visually
-    try { $("#flipbook").turn("page", 1); } catch(e){}
-  }
-
-  front.addEventListener('click', openDiary);
-  openBtn.addEventListener('click', openDiary);
-  closeBtn.addEventListener('click', closeDiary);
-}
-
-/* initial build */
-document.addEventListener('DOMContentLoaded', ()=>{
-  buildBook(TOTAL_PAGES);
-  initTurn();
-
-  // wait for pages to be in DOM then populate and wire events
-  setTimeout(()=> {
-    populateAndLoad(TOTAL_PAGES);
-    wireEvents(TOTAL_PAGES);
-    wireCoverBehavior(TOTAL_PAGES);
-  }, 300);
-
-  // make pages responsive on resize
-  window.addEventListener('resize', ()=> {
-    try { $("#flipbook").turn("size", Math.min(window.innerWidth * 0.94, 2 * PAGE_W + 40), Math.min(window.innerHeight * 0.82, PAGE_H)); } catch(e){}
-  });
 });
 </script>
+
 </body>
 </html>
