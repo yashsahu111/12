@@ -29,7 +29,6 @@
         linear-gradient(120deg, #2a1a0f, #1a120c);
     }
 
-    /* subtle "wood-ish" grain */
     body::before{
       content:"";
       position:fixed;
@@ -84,6 +83,7 @@
         inset -18px 0 22px var(--spine-shadow),
         inset 10px 0 18px var(--edge-shadow);
     }
+
     .pageRight{
       box-shadow:
         inset 18px 0 22px var(--spine-shadow),
@@ -99,7 +99,6 @@
       outline:none;
       color: var(--ink);
       background-color: transparent;
-      /* margin line + horizontal lines */
       background-image:
         linear-gradient(to right,
           transparent 0,
@@ -120,15 +119,12 @@
       font-size: 26px;
     }
 
-    /* make the caret feel "inky" */
     textarea.diaryText{ caret-color: #111827; }
 
-    /* nice scrollbars */
     .diaryText::-webkit-scrollbar{ width: 10px; }
     .diaryText::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.20); border-radius: 999px; }
     .diaryText::-webkit-scrollbar-track{ background: rgba(0,0,0,0.05); border-radius: 999px; }
 
-    /* page turn sheet */
     #flipSheet{
       transform-style: preserve-3d;
       backface-visibility: hidden;
@@ -141,6 +137,7 @@
     #flipBack{
       transform: rotateY(180deg);
     }
+
     .flipShade{
       pointer-events:none;
       background:
@@ -150,23 +147,43 @@
       mix-blend-mode: multiply;
     }
 
-    /* Reduce motion respect */
     @media (prefers-reduced-motion: reduce){
       #book{ transition:none; transform:none; }
       .flipShade{ transition:none; }
     }
 
-    /* Make it readable on small screens */
-    @media (max-width: 640px){
-      .diaryText{ font-size: 20px; line-height: 28px; background-image:
-        linear-gradient(to right, transparent 0, transparent 2.0rem, var(--margin) 2.0rem, var(--margin) 2.06rem, transparent 2.06rem),
-        repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 27px, var(--line) 28px);
+    /* ------------------ MOBILE FIXES ------------------ */
+    @media (max-width: 768px) {
+
+      /* Disable 3D transforms on phone */
+      #book, #book:hover {
+        transform: none !important;
+      }
+
+      /* Prevent flip overlay from blocking touches */
+      #flipSheet {
+        display: none !important;
+      }
+
+      /* Make typing easier */
+      .diaryText {
+        font-size: 18px !important;
+        line-height: 26px !important;
+        padding: 1rem !important;
+        min-height: 65vh !important;
+      }
+
+      /* Ensure taps register */
+      #book, #spread, textarea {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
       }
     }
+
   </style>
 </head>
 
-<body class="text-stone-900">
+  <body class="text-stone-900">
   <div class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
     <header class="w-full max-w-6xl mb-4">
       <div class="flex flex-col gap-3">
@@ -216,24 +233,28 @@
     </header>
 
     <main class="w-full max-w-6xl">
-      <div id="book" class="relative w-full aspect-[16/9] max-h-[72vh]">
-        <!-- Cover / outer book -->
+      <div id="book" class="relative w-full aspect-[3/4] sm:aspect-[16/9] max-h-[85vh] sm:max-h-[72vh]">
+
+        <!-- Cover of the book -->
         <div class="cover absolute inset-0 rounded-[2.2rem] shadow-[0_30px_80px_rgba(0,0,0,0.55)] ring-1 ring-black/25"></div>
+
         <!-- Spine highlight -->
         <div class="absolute top-4 bottom-4 left-1/2 w-[12px] -translate-x-1/2 rounded-full bg-gradient-to-b from-white/12 via-black/10 to-black/25 blur-[0.2px] opacity-90"></div>
 
-        <!-- Page block inset -->
+        <!-- Page block -->
         <div class="absolute inset-3 sm:inset-4 md:inset-5 rounded-[1.6rem] overflow-hidden shadow-inner ring-1 ring-black/10">
           <div class="paperArea absolute inset-0"></div>
 
           <!-- Ribbon bookmark -->
           <div class="pointer-events-none absolute left-1/2 -translate-x-1/2 top-0 w-8 sm:w-10 h-[72%]">
             <div class="absolute inset-x-0 top-0 h-full bg-gradient-to-b from-red-700/90 via-red-700/70 to-red-900/80 shadow-[0_12px_22px_rgba(0,0,0,0.25)]"></div>
-            <div class="absolute bottom-0 left-0 right-0 h-10 clip-path-[polygon(0%_0%,100%_0%,50%_100%)]" style="clip-path: polygon(0% 0%, 100% 0%, 50% 100%);"></div>
+            <div class="absolute bottom-0 left-0 right-0 h-10 clip-path-[polygon(0%_0%,100%_0%,50%_100%)]"></div>
           </div>
 
-          <!-- Spread -->
+          <!-- Spread with 2 visible pages -->
           <div id="spread" class="absolute inset-0 flex">
+
+            <!-- LEFT PAGE -->
             <section class="relative w-1/2 h-full p-5 sm:p-7 md:p-9 border-r border-stone-400/30 pageBase pageLeft">
               <div class="h-full flex flex-col">
                 <div class="flex items-baseline justify-between gap-2">
@@ -243,12 +264,14 @@
                   </div>
                   <div class="text-[11px] text-stone-500">Page <span id="leftPageNum">1</span></div>
                 </div>
+
                 <div class="mt-3 flex-1 min-h-0">
                   <textarea id="leftText" class="diaryText font-hand" spellcheck="true" placeholder="Write here..."></textarea>
                 </div>
               </div>
             </section>
 
+            <!-- RIGHT PAGE -->
             <section class="relative w-1/2 h-full p-5 sm:p-7 md:p-9 pageBase pageRight">
               <div class="h-full flex flex-col">
                 <div class="flex items-baseline justify-between gap-2">
@@ -258,6 +281,7 @@
                   </div>
                   <div class="text-[11px] text-stone-500">Page <span id="rightPageNum">2</span></div>
                 </div>
+
                 <div class="mt-3 flex-1 min-h-0">
                   <textarea id="rightText" class="diaryText font-hand" spellcheck="true" placeholder="...and continue here"></textarea>
                 </div>
@@ -265,14 +289,14 @@
             </section>
           </div>
 
-          <!-- Flip sheet overlay (half page) -->
+          <!-- Flip sheet overlay (hidden on mobile) -->
           <div id="flipSheet" class="absolute top-0 bottom-0 w-1/2 hidden z-30">
             <div id="flipFront" class="absolute inset-0"></div>
             <div id="flipBack" class="absolute inset-0"></div>
             <div id="flipShade" class="absolute inset-0 flipShade"></div>
           </div>
 
-          <!-- Subtle center crease -->
+          <!-- Center crease -->
           <div class="pointer-events-none absolute top-0 bottom-0 left-1/2 w-[2px] -translate-x-1/2 bg-gradient-to-b from-black/0 via-black/10 to-black/0 opacity-60"></div>
         </div>
       </div>
@@ -357,27 +381,25 @@
         const day = String(d.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       }
+
       function fromISODate(s){
         const [y,m,d] = (s || '').split('-').map(Number);
         if(!y || !m || !d) return new Date();
         return new Date(y, m-1, d);
       }
+
       function addDays(iso, delta){
         const d = fromISODate(iso);
         d.setDate(d.getDate() + delta);
         return toISODate(d);
       }
-      function cmpISO(a, b){
-        // ISO dates compare lexicographically
-        if(a === b) return 0;
-        return a < b ? -1 : 1;
-      }
+
       function diffDays(a, b){
         const aa = fromISODate(a);
         const bb = fromISODate(b);
-        const ms = (bb - aa);
-        return Math.round(ms / 86400000);
+        return Math.round((bb - aa) / 86400000);
       }
+
       function prettyDate(iso){
         const d = fromISODate(iso);
         return new Intl.DateTimeFormat(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(d);
@@ -415,9 +437,8 @@
         return state.data.entries[date];
       }
 
-      // ----- UI / rendering -----
+      // ----- Rendering -----
       function getPromptForDate(iso){
-        // deterministic prompt per date
         let seed = 0;
         for(let i=0;i<iso.length;i++) seed = (seed * 31 + iso.charCodeAt(i)) >>> 0;
         return prompts[seed % prompts.length];
@@ -435,7 +456,6 @@
       }
 
       function computeStreak(){
-        // Count consecutive days ending today where entry has any text.
         const today = toISODate(new Date());
         let count = 0;
         let cursor = today;
@@ -472,8 +492,6 @@
         entry.updatedAt = Date.now();
         state.data.lastDate = d;
         persist();
-        state.lastSavedAt = Date.now();
-        setStatus('Saved ' + new Date(state.lastSavedAt).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}));
         updateStreakStatus();
       }
 
@@ -482,13 +500,12 @@
         if(state.saveTimer) clearTimeout(state.saveTimer);
         state.saveTimer = setTimeout(() => {
           saveFromInputs();
+          setStatus('Saved');
         }, 450);
       }
 
       function getPageNumberForDate(date){
-        // Page numbers are based on chronological date order of existing entries.
         const keys = Object.keys(state.data.entries);
-        // include current date even if new
         if(!keys.includes(date)) keys.push(date);
         keys.sort();
         const index = keys.indexOf(date);
@@ -520,188 +537,6 @@
         updateStreakStatus();
       }
 
-      function escapeHtml(str){
-        return (str || '')
-          .replaceAll('&', '&amp;')
-          .replaceAll('<', '&lt;')
-          .replaceAll('>', '&gt;')
-          .replaceAll('"', '&quot;')
-          .replaceAll("'", '&#039;');
-      }
-
-      function snapshotHalf(which){
-        const date = state.currentDate;
-        const label = prettyDate(date);
-        const text = which === 'right' ? els.rightText.value : els.leftText.value;
-        const safe = escapeHtml(text);
-        const prompt = escapeHtml(getPromptForDate(date));
-
-        const pageNum = getPageNumberForDate(date);
-        const p = which === 'right' ? pageNum.right : pageNum.left;
-
-        return `
-          <div class="h-full w-full p-5 sm:p-7 md:p-9 pageBase" style="background-color: transparent;">
-            <div class="h-full flex flex-col">
-              <div class="flex items-baseline justify-between gap-2">
-                <div>
-                  <div class="font-display text-lg sm:text-xl text-stone-800">${label}</div>
-                  <div class="text-xs text-stone-600 italic mt-0.5">Prompt: ${prompt}</div>
-                </div>
-                <div class="text-[11px] text-stone-500">Page ${p}</div>
-              </div>
-              <div class="mt-3 flex-1 min-h-0">
-                <div class="font-hand" style="height:100%; border-radius:0.75rem; padding:0.15rem 0.5rem 0.25rem 0.5rem; color:var(--ink);
-                  background-image:
-                    linear-gradient(to right, transparent 0, transparent 2.4rem, var(--margin) 2.4rem, var(--margin) 2.46rem, transparent 2.46rem),
-                    repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 31px, var(--line) 32px);
-                  background-attachment: local;
-                  line-height:32px;
-                  font-size:26px;
-                  white-space:pre-wrap;
-                  overflow:hidden;">${safe || '<span style="color: rgba(71,85,105,0.55);">(blank)</span>'}</div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      // ----- Audio (optional) -----
-      function getAudioContext(){
-        if(state.audio.ctx) return state.audio.ctx;
-        const Ctx = window.AudioContext || window.webkitAudioContext;
-        if(!Ctx) return null;
-        state.audio.ctx = new Ctx();
-        return state.audio.ctx;
-      }
-
-      function playPageTurn(){
-        if(!state.data.settings.sound) return;
-        const ctx = getAudioContext();
-        if(!ctx) return;
-        if(ctx.state === 'suspended') ctx.resume().catch(()=>{});
-
-        // Noise burst + quick envelopes to mimic paper.
-        const duration = 0.12;
-        const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * duration));
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for(let i=0;i<bufferSize;i++) data[i] = (Math.random() * 2 - 1) * 0.7;
-
-        const src = ctx.createBufferSource();
-        src.buffer = buffer;
-
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 950;
-        filter.Q.value = 0.8;
-
-        const gain = ctx.createGain();
-        const now = ctx.currentTime;
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(0.18, now + 0.015);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-        src.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-        src.start();
-        src.stop(now + duration);
-      }
-
-      // ----- Page Flip animation -----
-      function animateFlip(direction){
-        // direction: +1 forward (right page turns), -1 backward (left page turns)
-        if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-          return Promise.resolve();
-        }
-        return new Promise(resolve => {
-          const isForward = direction > 0;
-          const sheet = els.flipSheet;
-          const shade = els.flipShade;
-
-          // Place the sheet on the correct half
-          sheet.classList.remove('hidden');
-          sheet.style.transition = 'none';
-          sheet.style.transform = 'rotateY(0deg)';
-          sheet.style.left = isForward ? '50%' : '0%';
-          sheet.style.right = 'auto';
-          sheet.style.transformOrigin = isForward ? 'left center' : 'right center';
-
-          // Front shows the page being turned.
-          els.flipFront.innerHTML = snapshotHalf(isForward ? 'right' : 'left');
-          // Back is a blank-ish page texture.
-          els.flipBack.innerHTML = snapshotHalf(isForward ? 'right' : 'left');
-
-          // Add extra shading during flip
-          shade.style.opacity = '0';
-
-          // Force reflow
-          sheet.getBoundingClientRect();
-
-          // Start transition
-          sheet.style.transition = 'transform 720ms cubic-bezier(.2,.8,.2,1)';
-          requestAnimationFrame(() => {
-            shade.style.opacity = '1';
-            sheet.style.transform = isForward ? 'rotateY(-180deg)' : 'rotateY(180deg)';
-          });
-
-          const done = () => {
-            sheet.removeEventListener('transitionend', done);
-            sheet.classList.add('hidden');
-            sheet.style.transition = '';
-            sheet.style.transform = '';
-            sheet.style.left = '';
-            sheet.style.transformOrigin = '';
-            shade.style.opacity = '0';
-            els.flipFront.innerHTML = '';
-            els.flipBack.innerHTML = '';
-            resolve();
-          };
-
-          sheet.addEventListener('transitionend', done);
-          // Failsafe
-          setTimeout(done, 900);
-        });
-      }
-
-      async function goToDate(targetDate){
-        if(state.isFlipping) return;
-        if(!targetDate) return;
-
-        // Save current content first
-        if(state.currentDate) saveFromInputs();
-
-        const current = state.currentDate;
-        const delta = current ? diffDays(current, targetDate) : 0;
-
-        // Decide animation type
-        const abs = Math.abs(delta);
-        let direction = 0;
-        if(abs === 1) direction = delta > 0 ? +1 : -1;
-
-        state.isFlipping = true;
-        setEditingEnabled(false);
-        document.activeElement && document.activeElement.blur && document.activeElement.blur();
-
-        if(direction !== 0){
-          playPageTurn();
-          await animateFlip(direction);
-          renderDate(targetDate);
-        } else {
-          // quick fade for jumps
-          els.spread.style.transition = 'opacity 160ms ease';
-          els.spread.style.opacity = '0';
-          await new Promise(r => setTimeout(r, 170));
-          renderDate(targetDate);
-          els.spread.style.opacity = '1';
-          await new Promise(r => setTimeout(r, 170));
-          els.spread.style.transition = '';
-        }
-
-        setEditingEnabled(true);
-        state.isFlipping = false;
-      }
-
       // ----- Export / Import -----
       function download(filename, text){
         const blob = new Blob([text], { type: 'application/json' });
@@ -718,30 +553,22 @@
       function doExport(){
         saveFromInputs();
         const date = toISODate(new Date());
-        const name = `diary-backup-${date}.json`;
-        download(name, JSON.stringify(state.data, null, 2));
+        download(`diary-backup-${date}.json`, JSON.stringify(state.data, null, 2));
         setStatus('Exported backup');
       }
 
       async function doImport(file){
         const text = await file.text();
         const parsed = JSON.parse(text);
-        if(!parsed || typeof parsed !== 'object') throw new Error('Invalid file');
-
         state.data = {
           version: 1,
           lastDate: parsed.lastDate || null,
           entries: parsed.entries || {},
-          settings: {
-            sound: !!(parsed.settings && parsed.settings.sound)
-          }
+          settings: { sound: !!(parsed.settings && parsed.settings.sound) }
         };
         persist();
-        els.soundToggle.checked = !!state.data.settings.sound;
-
-        const today = toISODate(new Date());
-        const start = state.data.lastDate || today;
-        await goToDate(start);
+        const start = state.data.lastDate || toISODate(new Date());
+        renderDate(start);
         setStatus('Imported backup');
       }
 
@@ -750,86 +577,39 @@
         els.leftText.addEventListener('input', () => { updateWordStatus(); scheduleSave(); });
         els.rightText.addEventListener('input', () => { updateWordStatus(); scheduleSave(); });
 
-        els.prevBtn.addEventListener('click', () => goToDate(addDays(state.currentDate, -1)));
-        els.nextBtn.addEventListener('click', () => goToDate(addDays(state.currentDate, +1)));
+        els.prevBtn.addEventListener('click', () => renderDate(addDays(state.currentDate, -1)));
+        els.nextBtn.addEventListener('click', () => renderDate(addDays(state.currentDate, +1)));
 
-        els.todayBtn.addEventListener('click', () => goToDate(toISODate(new Date())));
-        els.goBtn.addEventListener('click', () => goToDate(els.dateInput.value));
-        els.dateInput.addEventListener('keydown', (e) => {
-          if(e.key === 'Enter') goToDate(els.dateInput.value);
-        });
+        els.todayBtn.addEventListener('click', () => renderDate(toISODate(new Date())));
+        els.goBtn.addEventListener('click', () => renderDate(els.dateInput.value));
 
         els.exportBtn.addEventListener('click', doExport);
 
         els.importInput.addEventListener('change', async (e) => {
           const file = e.target.files && e.target.files[0];
-          if(!file) return;
-          try{
-            await doImport(file);
-          }catch(err){
-            alert('Could not import that file.');
-            console.error(err);
-          }finally{
-            els.importInput.value = '';
+          if(file){
+            try{ await doImport(file); }
+            catch(_){ alert('Could not import file.'); }
           }
         });
 
         els.clearBtn.addEventListener('click', () => {
-          const ok = confirm('Reset diary on this device? This will delete all entries stored in this browser.');
-          if(!ok) return;
-          localStorage.removeItem(STORAGE_KEY);
-          state.data = { version: 1, lastDate: null, entries: {}, settings: { sound: false } };
-          els.soundToggle.checked = false;
-          const today = toISODate(new Date());
-          renderDate(today);
-          setStatus('Reset complete');
-        });
-
-        els.soundToggle.addEventListener('change', () => {
-          state.data.settings.sound = !!els.soundToggle.checked;
-          persist();
-          if(state.data.settings.sound){
-            // prime audio on a user gesture
-            const ctx = getAudioContext();
-            if(ctx && ctx.state === 'suspended') ctx.resume().catch(()=>{});
+          if(confirm('Reset diary? This cannot be undone.')){
+            localStorage.removeItem(STORAGE_KEY);
+            state.data = { version:1, lastDate:null, entries:{}, settings:{sound:false} };
+            renderDate(toISODate(new Date()));
+            setStatus('Reset complete');
           }
         });
 
         window.addEventListener('beforeunload', () => {
-          try{ saveFromInputs(); }catch(_){ }
-        });
-
-        document.addEventListener('keydown', (e) => {
-          if(e.target && (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')){
-            // Still allow Ctrl+S within inputs, and arrows if not selecting
-          }
-
-          if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's'){
-            e.preventDefault();
-            saveFromInputs();
-            setStatus('Saved');
-            return;
-          }
-
-          if(e.key === 'ArrowLeft'){
-            // Avoid interfering with text cursor when actively editing
-            if(document.activeElement === els.leftText || document.activeElement === els.rightText) return;
-            goToDate(addDays(state.currentDate, -1));
-          }
-          if(e.key === 'ArrowRight'){
-            if(document.activeElement === els.leftText || document.activeElement === els.rightText) return;
-            goToDate(addDays(state.currentDate, +1));
-          }
+          try { saveFromInputs(); }catch(_){}
         });
       }
 
-      // ----- Init -----
       function init(){
         load();
-        els.soundToggle.checked = !!state.data.settings.sound;
-
-        const today = toISODate(new Date());
-        const startDate = state.data.lastDate || today;
+        const startDate = state.data.lastDate || toISODate(new Date());
         renderDate(startDate);
         setStatus('Ready');
         wire();
