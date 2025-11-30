@@ -152,6 +152,32 @@
       .flipShade{ transition:none; }
     }
 
+    /* ------------------ CLOSED BOOK STYLE ------------------ */
+.bookClosed {
+  transform: none !important;
+  cursor: pointer;
+}
+
+.bookClosed .paperArea,
+.bookClosed #spread,
+.bookClosed #flipSheet,
+.bookClosed .pointer-events-none,
+.bookClosed .pageBase,
+.bookClosed textarea {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bookClosed .cover {
+  transform: scale(1.02);
+  transition: transform 0.6s ease, opacity 0.4s ease;
+}
+
+.bookClosed:hover .cover {
+  transform: scale(1.03);
+}
+
+
     /* ------------------ MOBILE FIXES ------------------ */
     @media (max-width: 768px) {
 
@@ -233,7 +259,8 @@
     </header>
 
     <main class="w-full max-w-6xl">
-      <div id="book" class="relative w-full aspect-[3/4] sm:aspect-[16/9] max-h-[85vh] sm:max-h-[72vh]">
+     <div id="book" class="bookClosed relative w-full aspect-[3/4] sm:aspect-[16/9] max-h-[85vh] sm:max-h-[72vh]">
+
 
         <!-- Cover of the book -->
         <div class="cover absolute inset-0 rounded-[2.2rem] shadow-[0_30px_80px_rgba(0,0,0,0.55)] ring-1 ring-black/25"></div>
@@ -313,6 +340,7 @@
       const STORAGE_KEY = 'realistic-diary.v1';
 
       const els = {
+        book: document.getElementById('book'),
         todayBtn: document.getElementById('todayBtn'),
         prevBtn: document.getElementById('prevBtn'),
         nextBtn: document.getElementById('nextBtn'),
@@ -613,6 +641,16 @@
         renderDate(startDate);
         setStatus('Ready');
         wire();
+        // ----- OPEN BOOK ON CLICK -----
+els.book = document.getElementById("book");
+
+els.book.addEventListener("click", () => {
+  if (els.book.classList.contains("bookClosed")) {
+    els.book.classList.remove("bookClosed");
+    els.book.style.transition = "transform 700ms cubic-bezier(.2,.8,.2,1)";
+  }
+});
+
       }
 
       init();
@@ -620,3 +658,4 @@
   </script>
 </body>
 </html>
+
