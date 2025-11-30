@@ -1,191 +1,842 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realistic Flipping Diary</title>
-    
-    <script src="lib/jquery.min.js"></script>
-    <script src="lib/turn.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Diary</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet">
 
-    <style>
-    /* --- General Setup --- */
-    body {
-        background-color: #f4f4f9; 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-        font-family: Arial, sans-serif; 
-        perspective: none; 
-    }
-    
-    /* --- The Book Container (Controlled by Turn.js) --- */
-    #flipbook {
-        width: 600px; /* Two pages wide (2 * 300px) */
-        height: 400px; /* Page height */
-        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5); /* Shadow for the whole closed book */
+  <style>
+    :root{
+      --paper-1:#fbf3df;
+      --paper-2:#f5e8cf;
+      --ink:#1f2937;
+      --line: rgba(15, 23, 42, 0.14);
+      --margin: rgba(239, 68, 68, 0.25);
+      --spine-shadow: rgba(0,0,0,0.12);
+      --edge-shadow: rgba(0,0,0,0.07);
     }
 
-    /* --- Page Styling (Applies to all pages, including covers) --- */
-    .page {
-        background-color: #fffff0; /* Default inner paper color */
-        border: 1px solid #ccc;
-        box-sizing: border-box;
-        padding: 20px;
-        overflow: hidden; 
-        line-height: 1.6;
-        color: #444;
+    body{
+      min-height:100vh;
+      color:#111827;
+      background:
+        radial-gradient(1200px 700px at 20% 5%, rgba(255,255,255,0.10), transparent 60%),
+        radial-gradient(900px 500px at 80% 0%, rgba(255,255,255,0.06), transparent 55%),
+        linear-gradient(120deg, #2a1a0f, #1a120c);
     }
 
-    /* --- COVER STYLING (The First and Last Pages) --- */
-    .cover {
-        background-color: #e8e3d6 !important; /* The light paper background color */
-        border: none;
-        padding: 0;
+    /* subtle "wood-ish" grain */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.18;
+      background:
+        repeating-linear-gradient(90deg,
+          rgba(255,255,255,0.05) 0px,
+          rgba(255,255,255,0.02) 14px,
+          rgba(0,0,0,0.06) 28px,
+          rgba(0,0,0,0.02) 42px
+        );
+      mix-blend-mode: soft-light;
     }
 
-    /* --- Spine/Binding Effect --- */
-    /* This element is now ONLY in the front cover HTML and is positioned on the edge */
-    .spine-effect {
-        position: absolute;
-        /* Position the spine effect on the very left edge of the front cover */
-        left: -20px; /* Moves it outside the cover to sit on the book's edge */
-        top: 0;
-        width: 20px;
-        height: 100%;
-        background-color: #333; 
-        /* Creates the spiral/binding look */
-        background-image: repeating-linear-gradient(to bottom, #555, #555 2px, #333 2px, #333 5px);
-        z-index: 999; 
-        pointer-events: none;
+    .font-display{ font-family: "Playfair Display", ui-serif, Georgia, serif; }
+    .font-hand{ font-family: "Caveat", ui-rounded, system-ui, -apple-system, Segoe UI, sans-serif; }
+
+    #book{
+      transform: perspective(1400px) rotateX(6deg) rotateZ(-0.8deg);
+      transform-style: preserve-3d;
+      transition: transform 700ms cubic-bezier(.2,.8,.2,1);
     }
-    
-    /* When the book is open, the spine-effect from the cover flips away with the cover.
-       We don't need a separate spine element for the center. 
-       We will add a subtle margin line to the inner pages instead. */
-    .page:not(.cover) {
-        border-left: 1px dashed #f08080; /* Red margin line for inner pages (left side) */
-        border-right: 1px dashed #ccc;  /* Light line for inner pages (right side) */
-        padding-left: 30px; /* Increase left padding to account for margin line */
+    #book:hover{
+      transform: perspective(1400px) rotateX(2.8deg) rotateZ(0deg);
     }
 
-    /* --- COVER DESIGN (Matching your image) --- */
-    .cover-design {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        z-index: 10;
+    .cover{
+      background:
+        radial-gradient(800px 420px at 10% 10%, rgba(255,255,255,0.18), transparent 55%),
+        linear-gradient(135deg, #7c3f19, #3a1a0c 55%, #2b120a);
     }
 
-    /* Abstract Shape 1: Top Left (Blue/Grey) */
-    .cover-design::before {
-        content: '';
-        position: absolute;
-        top: -50px;
-        left: -50px;
-        width: 150px;
-        height: 150px;
-        background-color: #b0c4de; 
-        border-radius: 50%;
-        opacity: 0.8;
-        transform: rotate(-10deg);
+    .paperArea{
+      background:
+        radial-gradient(600px 350px at 40% 10%, rgba(255,255,255,0.55), transparent 60%),
+        linear-gradient(90deg, rgba(255,255,255,0.35), rgba(255,255,255,0.10)),
+        linear-gradient(180deg, var(--paper-1), var(--paper-2));
     }
 
-    /* Abstract Shape 2: Middle/Bottom (Tan/Brown) */
-    .cover-design::after {
-        content: '';
-        position: absolute;
-        bottom: -80px;
-        left: 30px;
-        width: 250px;
-        height: 250px;
-        background-color: #d2b48c; 
-        border-radius: 45% 55% 50% 50% / 60% 60% 40% 40%;
-        opacity: 0.7;
-        transform: rotate(5deg);
+    .pageBase{
+      background:
+        radial-gradient(420px 260px at 30% 15%, rgba(255,255,255,0.55), transparent 55%),
+        radial-gradient(2px 2px at 20% 30%, rgba(0,0,0,0.05), transparent 60%),
+        radial-gradient(2px 2px at 60% 60%, rgba(0,0,0,0.05), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.35), rgba(0,0,0,0.02));
     }
 
-    /* Abstract Shape 3: Bottom Right (Rust/Orange) */
-    .shape-3 { 
-        position: absolute;
-        bottom: 0px;
-        right: 0px;
-        width: 150px;
-        height: 150px;
-        background-color: #cd853f; 
-        border-radius: 50%;
-        opacity: 0.6;
-        transform: rotate(20deg) translate(50px, 50px);
-        z-index: 5;
+    .pageLeft{
+      box-shadow:
+        inset -18px 0 22px var(--spine-shadow),
+        inset 10px 0 18px var(--edge-shadow);
+    }
+    .pageRight{
+      box-shadow:
+        inset 18px 0 22px var(--spine-shadow),
+        inset -10px 0 18px var(--edge-shadow);
     }
 
-    .quote {
-        position: absolute;
-        top: 35%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-family: 'Segoe Script', 'Handlee', cursive, sans-serif; 
-        font-size: 1.2em;
-        font-weight: 500;
-        color: #333;
-        text-align: center;
-        line-height: 1.4;
-        z-index: 30; 
-        padding: 5px;
-        background-color: rgba(255, 255, 255, 0.5); 
+    .diaryText{
+      width:100%;
+      height:100%;
+      min-height:0;
+      resize:none;
+      border:0;
+      outline:none;
+      color: var(--ink);
+      background-color: transparent;
+      /* margin line + horizontal lines */
+      background-image:
+        linear-gradient(to right,
+          transparent 0,
+          transparent 2.4rem,
+          var(--margin) 2.4rem,
+          var(--margin) 2.46rem,
+          transparent 2.46rem
+        ),
+        repeating-linear-gradient(to bottom,
+          rgba(0,0,0,0) 0,
+          rgba(0,0,0,0) 31px,
+          var(--line) 32px
+        );
+      background-attachment: local;
+      line-height: 32px;
+      padding: 0.15rem 0.5rem 0.25rem 0.5rem;
+      border-radius: 0.75rem;
+      font-size: 26px;
     }
 
-    /* --- INNER PAGE STYLING --- */
-    .page h2 {
-        color: #4e342e;
-        border-bottom: 1px dashed #ccc;
-        padding-bottom: 10px;
-        margin-top: 0;
+    /* make the caret feel "inky" */
+    textarea.diaryText{ caret-color: #111827; }
+
+    /* nice scrollbars */
+    .diaryText::-webkit-scrollbar{ width: 10px; }
+    .diaryText::-webkit-scrollbar-thumb{ background: rgba(0,0,0,0.20); border-radius: 999px; }
+    .diaryText::-webkit-scrollbar-track{ background: rgba(0,0,0,0.05); border-radius: 999px; }
+
+    /* page turn sheet */
+    #flipSheet{
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      will-change: transform;
     }
-</style>
+    #flipFront, #flipBack{
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    #flipBack{
+      transform: rotateY(180deg);
+    }
+    .flipShade{
+      pointer-events:none;
+      background:
+        linear-gradient(90deg, rgba(0,0,0,0.25), rgba(0,0,0,0.02) 40%, rgba(0,0,0,0.18));
+      opacity:0;
+      transition: opacity 200ms ease;
+      mix-blend-mode: multiply;
+    }
+
+    /* Reduce motion respect */
+    @media (prefers-reduced-motion: reduce){
+      #book{ transition:none; transform:none; }
+      .flipShade{ transition:none; }
+    }
+
+    /* Make it readable on small screens */
+    @media (max-width: 640px){
+      .diaryText{ font-size: 20px; line-height: 28px; background-image:
+        linear-gradient(to right, transparent 0, transparent 2.0rem, var(--margin) 2.0rem, var(--margin) 2.06rem, transparent 2.06rem),
+        repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 27px, var(--line) 28px);
+      }
+    }
+  </style>
 </head>
-<body>
-    <div id="flipbook">
-        
-        <div class="page cover" id="page1">
-            <div class="spine-effect"></div>
-            <div class="cover-design">
-                <div class="shape-3"></div> 
-                <p class="quote">do more of what makes you happy</p>
-            </div>
-        </div>
-        
-        <div class="page" id="page2">
-            <h2>Welcome Entry!</h2>
-            <p>This is the first inner page. When the book is open, this page will be on the left side. Feel free to replace this text with your first diary entry!</p>
-        </div>
-        
-        <div class="page" id="page3">
-            <h2>October 27, 2025</h2>
-            <p>The diary is starting to look great! Click the corner of the page (bottom right of this page or bottom left of the previous page) to see the realistic flip animation.</p>
-        </div>
-        
-        <div class="page cover" id="page4" style="text-align: center;">
-            <p style="margin-top: 50%; font-size: 1.2em; color: #555;">**The Back Cover**<br>See you next time!</p>
-        </div>
-        
-    </div>
 
-    <script>
-        // Check if jQuery and Turn.js are loaded before initializing
-        if (typeof jQuery !== 'undefined' && typeof jQuery.fn.turn !== 'undefined') {
-            $("#flipbook").turn({
-                width: 600, // The total width of the two pages side-by-side
-                height: 400, // The height of the pages
-                autoCenter: true,
-                elevation: 50, // Depth effect for the 3D flip
-                gradients: true, // Adds realistic shadows
-                duration: 900 // Controls the speed of the flip (in milliseconds)
-            });
+<body class="text-stone-900">
+  <div class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+    <header class="w-full max-w-6xl mb-4">
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div class="flex items-center gap-3">
+            <h1 class="text-3xl sm:text-4xl font-display text-stone-100 tracking-tight">My Diary</h1>
+            <span class="hidden sm:inline text-xs text-stone-200/70">(saved on this device)</span>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button id="todayBtn" class="px-3 py-2 rounded-xl bg-stone-100/90 hover:bg-white text-stone-900 shadow">Today</button>
+            <button id="prevBtn" class="px-3 py-2 rounded-xl bg-stone-100/90 hover:bg-white text-stone-900 shadow" aria-label="Previous day">◀</button>
+            <button id="nextBtn" class="px-3 py-2 rounded-xl bg-stone-100/90 hover:bg-white text-stone-900 shadow" aria-label="Next day">▶</button>
+
+            <div class="flex items-center gap-2 bg-stone-100/90 rounded-xl px-2 py-1 shadow">
+              <input id="dateInput" type="date" class="bg-transparent outline-none px-1 py-1 text-sm" aria-label="Pick a date" />
+              <button id="goBtn" class="px-3 py-1.5 rounded-lg bg-stone-900 text-stone-100 hover:bg-stone-800 text-sm">Go</button>
+            </div>
+
+            <button id="exportBtn" class="px-3 py-2 rounded-xl bg-stone-100/90 hover:bg-white text-stone-900 shadow text-sm">Export</button>
+            <label class="px-3 py-2 rounded-xl bg-stone-100/90 hover:bg-white text-stone-900 shadow text-sm cursor-pointer">
+              Import
+              <input id="importInput" type="file" accept="application/json" class="hidden" />
+            </label>
+
+            <button id="clearBtn" class="px-3 py-2 rounded-xl bg-red-100/95 hover:bg-red-50 text-red-900 shadow text-sm">Reset</button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between flex-wrap gap-2 text-xs text-stone-200/80">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="saveStatus">Ready</span>
+            <span class="opacity-60">•</span>
+            <span id="wordStatus">Words today: 0</span>
+            <span class="opacity-60">•</span>
+            <span id="streakStatus">Streak: 0 days</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <label class="inline-flex items-center gap-2 select-none">
+              <input id="soundToggle" type="checkbox" class="accent-stone-100" />
+              <span>Page sound</span>
+            </label>
+            <span class="hidden sm:inline opacity-70">Tips: type freely • use ←/→ to turn pages • Ctrl/⌘+S saves</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="w-full max-w-6xl">
+      <div id="book" class="relative w-full aspect-[16/9] max-h-[72vh]">
+        <!-- Cover / outer book -->
+        <div class="cover absolute inset-0 rounded-[2.2rem] shadow-[0_30px_80px_rgba(0,0,0,0.55)] ring-1 ring-black/25"></div>
+        <!-- Spine highlight -->
+        <div class="absolute top-4 bottom-4 left-1/2 w-[12px] -translate-x-1/2 rounded-full bg-gradient-to-b from-white/12 via-black/10 to-black/25 blur-[0.2px] opacity-90"></div>
+
+        <!-- Page block inset -->
+        <div class="absolute inset-3 sm:inset-4 md:inset-5 rounded-[1.6rem] overflow-hidden shadow-inner ring-1 ring-black/10">
+          <div class="paperArea absolute inset-0"></div>
+
+          <!-- Ribbon bookmark -->
+          <div class="pointer-events-none absolute left-1/2 -translate-x-1/2 top-0 w-8 sm:w-10 h-[72%]">
+            <div class="absolute inset-x-0 top-0 h-full bg-gradient-to-b from-red-700/90 via-red-700/70 to-red-900/80 shadow-[0_12px_22px_rgba(0,0,0,0.25)]"></div>
+            <div class="absolute bottom-0 left-0 right-0 h-10 clip-path-[polygon(0%_0%,100%_0%,50%_100%)]" style="clip-path: polygon(0% 0%, 100% 0%, 50% 100%);"></div>
+          </div>
+
+          <!-- Spread -->
+          <div id="spread" class="absolute inset-0 flex">
+            <section class="relative w-1/2 h-full p-5 sm:p-7 md:p-9 border-r border-stone-400/30 pageBase pageLeft">
+              <div class="h-full flex flex-col">
+                <div class="flex items-baseline justify-between gap-2">
+                  <div>
+                    <div id="leftDateLabel" class="font-display text-lg sm:text-xl text-stone-800"></div>
+                    <div id="leftPrompt" class="text-xs text-stone-600 italic mt-0.5"></div>
+                  </div>
+                  <div class="text-[11px] text-stone-500">Page <span id="leftPageNum">1</span></div>
+                </div>
+                <div class="mt-3 flex-1 min-h-0">
+                  <textarea id="leftText" class="diaryText font-hand" spellcheck="true" placeholder="Write here..."></textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="relative w-1/2 h-full p-5 sm:p-7 md:p-9 pageBase pageRight">
+              <div class="h-full flex flex-col">
+                <div class="flex items-baseline justify-between gap-2">
+                  <div>
+                    <div id="rightDateLabel" class="font-display text-lg sm:text-xl text-stone-800"></div>
+                    <div id="rightPrompt" class="text-xs text-stone-600 italic mt-0.5"></div>
+                  </div>
+                  <div class="text-[11px] text-stone-500">Page <span id="rightPageNum">2</span></div>
+                </div>
+                <div class="mt-3 flex-1 min-h-0">
+                  <textarea id="rightText" class="diaryText font-hand" spellcheck="true" placeholder="...and continue here"></textarea>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Flip sheet overlay (half page) -->
+          <div id="flipSheet" class="absolute top-0 bottom-0 w-1/2 hidden z-30">
+            <div id="flipFront" class="absolute inset-0"></div>
+            <div id="flipBack" class="absolute inset-0"></div>
+            <div id="flipShade" class="absolute inset-0 flipShade"></div>
+          </div>
+
+          <!-- Subtle center crease -->
+          <div class="pointer-events-none absolute top-0 bottom-0 left-1/2 w-[2px] -translate-x-1/2 bg-gradient-to-b from-black/0 via-black/10 to-black/0 opacity-60"></div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-stone-200/75">
+        <p class="max-w-3xl">Your diary entries are saved locally in your browser (localStorage). Use Export/Import if you want a backup.</p>
+        <p class="opacity-70">Privacy note: if you share this device/browser profile, others can read it.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function(){
+      const STORAGE_KEY = 'realistic-diary.v1';
+
+      const els = {
+        todayBtn: document.getElementById('todayBtn'),
+        prevBtn: document.getElementById('prevBtn'),
+        nextBtn: document.getElementById('nextBtn'),
+        dateInput: document.getElementById('dateInput'),
+        goBtn: document.getElementById('goBtn'),
+        exportBtn: document.getElementById('exportBtn'),
+        importInput: document.getElementById('importInput'),
+        clearBtn: document.getElementById('clearBtn'),
+        saveStatus: document.getElementById('saveStatus'),
+        wordStatus: document.getElementById('wordStatus'),
+        streakStatus: document.getElementById('streakStatus'),
+        soundToggle: document.getElementById('soundToggle'),
+
+        spread: document.getElementById('spread'),
+        leftDateLabel: document.getElementById('leftDateLabel'),
+        rightDateLabel: document.getElementById('rightDateLabel'),
+        leftPrompt: document.getElementById('leftPrompt'),
+        rightPrompt: document.getElementById('rightPrompt'),
+        leftPageNum: document.getElementById('leftPageNum'),
+        rightPageNum: document.getElementById('rightPageNum'),
+        leftText: document.getElementById('leftText'),
+        rightText: document.getElementById('rightText'),
+
+        flipSheet: document.getElementById('flipSheet'),
+        flipFront: document.getElementById('flipFront'),
+        flipBack: document.getElementById('flipBack'),
+        flipShade: document.getElementById('flipShade'),
+      };
+
+      const prompts = [
+        'What moment do you want to remember from today?',
+        'What were you grateful for today?',
+        'What challenged you today—and what did you learn?',
+        'Name three small wins from today.',
+        'How did you take care of yourself today?',
+        'What made you smile today?',
+        'If today had a title, what would it be?',
+        'What are you looking forward to tomorrow?',
+        'What did you notice today that you usually miss?',
+        'Write one honest sentence about how you feel right now.'
+      ];
+
+      const state = {
+        currentDate: null,
+        data: {
+          version: 1,
+          lastDate: null,
+          entries: {},
+          settings: {
+            sound: false
+          }
+        },
+        isFlipping: false,
+        saveTimer: null,
+        lastSavedAt: null,
+        audio: {
+          ctx: null,
+          enabled: false,
         }
-    </script>
+      };
+
+      // ----- Date helpers -----
+      function toISODate(d){
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+      function fromISODate(s){
+        const [y,m,d] = (s || '').split('-').map(Number);
+        if(!y || !m || !d) return new Date();
+        return new Date(y, m-1, d);
+      }
+      function addDays(iso, delta){
+        const d = fromISODate(iso);
+        d.setDate(d.getDate() + delta);
+        return toISODate(d);
+      }
+      function cmpISO(a, b){
+        // ISO dates compare lexicographically
+        if(a === b) return 0;
+        return a < b ? -1 : 1;
+      }
+      function diffDays(a, b){
+        const aa = fromISODate(a);
+        const bb = fromISODate(b);
+        const ms = (bb - aa);
+        return Math.round(ms / 86400000);
+      }
+      function prettyDate(iso){
+        const d = fromISODate(iso);
+        return new Intl.DateTimeFormat(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+      }
+
+      // ----- Storage -----
+      function load(){
+        try{
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if(!raw) return;
+          const parsed = JSON.parse(raw);
+          if(parsed && typeof parsed === 'object'){
+            state.data = {
+              version: 1,
+              lastDate: parsed.lastDate || null,
+              entries: parsed.entries || {},
+              settings: {
+                sound: !!(parsed.settings && parsed.settings.sound)
+              }
+            };
+          }
+        }catch(e){
+          console.warn('Failed to load diary:', e);
+        }
+      }
+
+      function persist(){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data));
+      }
+
+      function ensureEntry(date){
+        if(!state.data.entries[date]){
+          state.data.entries[date] = { left: '', right: '', updatedAt: null };
+        }
+        return state.data.entries[date];
+      }
+
+      // ----- UI / rendering -----
+      function getPromptForDate(iso){
+        // deterministic prompt per date
+        let seed = 0;
+        for(let i=0;i<iso.length;i++) seed = (seed * 31 + iso.charCodeAt(i)) >>> 0;
+        return prompts[seed % prompts.length];
+      }
+
+      function wordsCount(text){
+        const t = (text || '').trim();
+        if(!t) return 0;
+        return t.split(/\s+/).filter(Boolean).length;
+      }
+
+      function updateWordStatus(){
+        const w = wordsCount(els.leftText.value) + wordsCount(els.rightText.value);
+        els.wordStatus.textContent = `Words today: ${w}`;
+      }
+
+      function computeStreak(){
+        // Count consecutive days ending today where entry has any text.
+        const today = toISODate(new Date());
+        let count = 0;
+        let cursor = today;
+        while(true){
+          const e = state.data.entries[cursor];
+          const has = e && ((e.left || '').trim() || (e.right || '').trim());
+          if(!has) break;
+          count++;
+          cursor = addDays(cursor, -1);
+        }
+        return count;
+      }
+
+      function updateStreakStatus(){
+        const streak = computeStreak();
+        els.streakStatus.textContent = `Streak: ${streak} day${streak === 1 ? '' : 's'}`;
+      }
+
+      function setStatus(text){
+        els.saveStatus.textContent = text;
+      }
+
+      function setEditingEnabled(enabled){
+        els.leftText.readOnly = !enabled;
+        els.rightText.readOnly = !enabled;
+      }
+
+      function saveFromInputs(){
+        const d = state.currentDate;
+        if(!d) return;
+        const entry = ensureEntry(d);
+        entry.left = els.leftText.value;
+        entry.right = els.rightText.value;
+        entry.updatedAt = Date.now();
+        state.data.lastDate = d;
+        persist();
+        state.lastSavedAt = Date.now();
+        setStatus('Saved ' + new Date(state.lastSavedAt).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}));
+        updateStreakStatus();
+      }
+
+      function scheduleSave(){
+        setStatus('Saving…');
+        if(state.saveTimer) clearTimeout(state.saveTimer);
+        state.saveTimer = setTimeout(() => {
+          saveFromInputs();
+        }, 450);
+      }
+
+      function getPageNumberForDate(date){
+        // Page numbers are based on chronological date order of existing entries.
+        const keys = Object.keys(state.data.entries);
+        // include current date even if new
+        if(!keys.includes(date)) keys.push(date);
+        keys.sort();
+        const index = keys.indexOf(date);
+        const base = index * 2 + 1;
+        return { left: base, right: base + 1 };
+      }
+
+      function renderDate(date){
+        state.currentDate = date;
+        els.dateInput.value = date;
+
+        const entry = ensureEntry(date);
+        els.leftText.value = entry.left || '';
+        els.rightText.value = entry.right || '';
+
+        const label = prettyDate(date);
+        els.leftDateLabel.textContent = label;
+        els.rightDateLabel.textContent = label;
+
+        const prompt = getPromptForDate(date);
+        els.leftPrompt.textContent = 'Prompt: ' + prompt;
+        els.rightPrompt.textContent = 'Prompt: ' + prompt;
+
+        const pn = getPageNumberForDate(date);
+        els.leftPageNum.textContent = pn.left;
+        els.rightPageNum.textContent = pn.right;
+
+        updateWordStatus();
+        updateStreakStatus();
+      }
+
+      function escapeHtml(str){
+        return (str || '')
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      function snapshotHalf(which){
+        const date = state.currentDate;
+        const label = prettyDate(date);
+        const text = which === 'right' ? els.rightText.value : els.leftText.value;
+        const safe = escapeHtml(text);
+        const prompt = escapeHtml(getPromptForDate(date));
+
+        const pageNum = getPageNumberForDate(date);
+        const p = which === 'right' ? pageNum.right : pageNum.left;
+
+        return `
+          <div class="h-full w-full p-5 sm:p-7 md:p-9 pageBase" style="background-color: transparent;">
+            <div class="h-full flex flex-col">
+              <div class="flex items-baseline justify-between gap-2">
+                <div>
+                  <div class="font-display text-lg sm:text-xl text-stone-800">${label}</div>
+                  <div class="text-xs text-stone-600 italic mt-0.5">Prompt: ${prompt}</div>
+                </div>
+                <div class="text-[11px] text-stone-500">Page ${p}</div>
+              </div>
+              <div class="mt-3 flex-1 min-h-0">
+                <div class="font-hand" style="height:100%; border-radius:0.75rem; padding:0.15rem 0.5rem 0.25rem 0.5rem; color:var(--ink);
+                  background-image:
+                    linear-gradient(to right, transparent 0, transparent 2.4rem, var(--margin) 2.4rem, var(--margin) 2.46rem, transparent 2.46rem),
+                    repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 31px, var(--line) 32px);
+                  background-attachment: local;
+                  line-height:32px;
+                  font-size:26px;
+                  white-space:pre-wrap;
+                  overflow:hidden;">${safe || '<span style="color: rgba(71,85,105,0.55);">(blank)</span>'}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // ----- Audio (optional) -----
+      function getAudioContext(){
+        if(state.audio.ctx) return state.audio.ctx;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if(!Ctx) return null;
+        state.audio.ctx = new Ctx();
+        return state.audio.ctx;
+      }
+
+      function playPageTurn(){
+        if(!state.data.settings.sound) return;
+        const ctx = getAudioContext();
+        if(!ctx) return;
+        if(ctx.state === 'suspended') ctx.resume().catch(()=>{});
+
+        // Noise burst + quick envelopes to mimic paper.
+        const duration = 0.12;
+        const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * duration));
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for(let i=0;i<bufferSize;i++) data[i] = (Math.random() * 2 - 1) * 0.7;
+
+        const src = ctx.createBufferSource();
+        src.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 950;
+        filter.Q.value = 0.8;
+
+        const gain = ctx.createGain();
+        const now = ctx.currentTime;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.18, now + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        src.start();
+        src.stop(now + duration);
+      }
+
+      // ----- Page Flip animation -----
+      function animateFlip(direction){
+        // direction: +1 forward (right page turns), -1 backward (left page turns)
+        if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+          return Promise.resolve();
+        }
+        return new Promise(resolve => {
+          const isForward = direction > 0;
+          const sheet = els.flipSheet;
+          const shade = els.flipShade;
+
+          // Place the sheet on the correct half
+          sheet.classList.remove('hidden');
+          sheet.style.transition = 'none';
+          sheet.style.transform = 'rotateY(0deg)';
+          sheet.style.left = isForward ? '50%' : '0%';
+          sheet.style.right = 'auto';
+          sheet.style.transformOrigin = isForward ? 'left center' : 'right center';
+
+          // Front shows the page being turned.
+          els.flipFront.innerHTML = snapshotHalf(isForward ? 'right' : 'left');
+          // Back is a blank-ish page texture.
+          els.flipBack.innerHTML = snapshotHalf(isForward ? 'right' : 'left');
+
+          // Add extra shading during flip
+          shade.style.opacity = '0';
+
+          // Force reflow
+          sheet.getBoundingClientRect();
+
+          // Start transition
+          sheet.style.transition = 'transform 720ms cubic-bezier(.2,.8,.2,1)';
+          requestAnimationFrame(() => {
+            shade.style.opacity = '1';
+            sheet.style.transform = isForward ? 'rotateY(-180deg)' : 'rotateY(180deg)';
+          });
+
+          const done = () => {
+            sheet.removeEventListener('transitionend', done);
+            sheet.classList.add('hidden');
+            sheet.style.transition = '';
+            sheet.style.transform = '';
+            sheet.style.left = '';
+            sheet.style.transformOrigin = '';
+            shade.style.opacity = '0';
+            els.flipFront.innerHTML = '';
+            els.flipBack.innerHTML = '';
+            resolve();
+          };
+
+          sheet.addEventListener('transitionend', done);
+          // Failsafe
+          setTimeout(done, 900);
+        });
+      }
+
+      async function goToDate(targetDate){
+        if(state.isFlipping) return;
+        if(!targetDate) return;
+
+        // Save current content first
+        if(state.currentDate) saveFromInputs();
+
+        const current = state.currentDate;
+        const delta = current ? diffDays(current, targetDate) : 0;
+
+        // Decide animation type
+        const abs = Math.abs(delta);
+        let direction = 0;
+        if(abs === 1) direction = delta > 0 ? +1 : -1;
+
+        state.isFlipping = true;
+        setEditingEnabled(false);
+        document.activeElement && document.activeElement.blur && document.activeElement.blur();
+
+        if(direction !== 0){
+          playPageTurn();
+          await animateFlip(direction);
+          renderDate(targetDate);
+        } else {
+          // quick fade for jumps
+          els.spread.style.transition = 'opacity 160ms ease';
+          els.spread.style.opacity = '0';
+          await new Promise(r => setTimeout(r, 170));
+          renderDate(targetDate);
+          els.spread.style.opacity = '1';
+          await new Promise(r => setTimeout(r, 170));
+          els.spread.style.transition = '';
+        }
+
+        setEditingEnabled(true);
+        state.isFlipping = false;
+      }
+
+      // ----- Export / Import -----
+      function download(filename, text){
+        const blob = new Blob([text], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function doExport(){
+        saveFromInputs();
+        const date = toISODate(new Date());
+        const name = `diary-backup-${date}.json`;
+        download(name, JSON.stringify(state.data, null, 2));
+        setStatus('Exported backup');
+      }
+
+      async function doImport(file){
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        if(!parsed || typeof parsed !== 'object') throw new Error('Invalid file');
+
+        state.data = {
+          version: 1,
+          lastDate: parsed.lastDate || null,
+          entries: parsed.entries || {},
+          settings: {
+            sound: !!(parsed.settings && parsed.settings.sound)
+          }
+        };
+        persist();
+        els.soundToggle.checked = !!state.data.settings.sound;
+
+        const today = toISODate(new Date());
+        const start = state.data.lastDate || today;
+        await goToDate(start);
+        setStatus('Imported backup');
+      }
+
+      // ----- Events -----
+      function wire(){
+        els.leftText.addEventListener('input', () => { updateWordStatus(); scheduleSave(); });
+        els.rightText.addEventListener('input', () => { updateWordStatus(); scheduleSave(); });
+
+        els.prevBtn.addEventListener('click', () => goToDate(addDays(state.currentDate, -1)));
+        els.nextBtn.addEventListener('click', () => goToDate(addDays(state.currentDate, +1)));
+
+        els.todayBtn.addEventListener('click', () => goToDate(toISODate(new Date())));
+        els.goBtn.addEventListener('click', () => goToDate(els.dateInput.value));
+        els.dateInput.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter') goToDate(els.dateInput.value);
+        });
+
+        els.exportBtn.addEventListener('click', doExport);
+
+        els.importInput.addEventListener('change', async (e) => {
+          const file = e.target.files && e.target.files[0];
+          if(!file) return;
+          try{
+            await doImport(file);
+          }catch(err){
+            alert('Could not import that file.');
+            console.error(err);
+          }finally{
+            els.importInput.value = '';
+          }
+        });
+
+        els.clearBtn.addEventListener('click', () => {
+          const ok = confirm('Reset diary on this device? This will delete all entries stored in this browser.');
+          if(!ok) return;
+          localStorage.removeItem(STORAGE_KEY);
+          state.data = { version: 1, lastDate: null, entries: {}, settings: { sound: false } };
+          els.soundToggle.checked = false;
+          const today = toISODate(new Date());
+          renderDate(today);
+          setStatus('Reset complete');
+        });
+
+        els.soundToggle.addEventListener('change', () => {
+          state.data.settings.sound = !!els.soundToggle.checked;
+          persist();
+          if(state.data.settings.sound){
+            // prime audio on a user gesture
+            const ctx = getAudioContext();
+            if(ctx && ctx.state === 'suspended') ctx.resume().catch(()=>{});
+          }
+        });
+
+        window.addEventListener('beforeunload', () => {
+          try{ saveFromInputs(); }catch(_){ }
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if(e.target && (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')){
+            // Still allow Ctrl+S within inputs, and arrows if not selecting
+          }
+
+          if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's'){
+            e.preventDefault();
+            saveFromInputs();
+            setStatus('Saved');
+            return;
+          }
+
+          if(e.key === 'ArrowLeft'){
+            // Avoid interfering with text cursor when actively editing
+            if(document.activeElement === els.leftText || document.activeElement === els.rightText) return;
+            goToDate(addDays(state.currentDate, -1));
+          }
+          if(e.key === 'ArrowRight'){
+            if(document.activeElement === els.leftText || document.activeElement === els.rightText) return;
+            goToDate(addDays(state.currentDate, +1));
+          }
+        });
+      }
+
+      // ----- Init -----
+      function init(){
+        load();
+        els.soundToggle.checked = !!state.data.settings.sound;
+
+        const today = toISODate(new Date());
+        const startDate = state.data.lastDate || today;
+        renderDate(startDate);
+        setStatus('Ready');
+        wire();
+      }
+
+      init();
+    })();
+  </script>
 </body>
 </html>
-
